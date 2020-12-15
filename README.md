@@ -1,2 +1,7 @@
 # recommand-system
-learning recommand system and github
+
+- LR
+
+# github command
+
+- github 常见指令
