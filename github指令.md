@@ -38,9 +38,23 @@ git以分区的形式管理文件，主要是两大分区：
 
 <img src="./images/github_1.png" style="zoom:50%;" />
 
+因此代码提交的步骤可以看成：
+
+1. git add filename： 将文件从工作区提交到暂存区(index)中
+2. git commit -m "note" ： 将文件从暂存区提交到当前head指向的分支上
+3. git push将当前分支提交到服务器上
+
+
+
 ### 查看代码状态 git status
 
+git status可以查看：
 
+1. 当前工作区文件是否被追踪，是否存在文件修改没有提交到暂存区上。
+
+2. 暂存区文件是否与当前分支文件内容不一样，是否存在需要commit的文件
+
+git status
 
 ## 版本控制
 
