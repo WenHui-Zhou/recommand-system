@@ -32,7 +32,11 @@ git以分区的形式管理文件，主要是两大分区：
 
 **版本库：**在当前工作区下有一个隐藏的文件夹.git，这边是git的版本库，实现版本的管理。
 
+版本库中存了很多东西，其中最重要的是stage（index暂存区），还有git为我们自动生成的第一个分支master，以及指向当前分支的HEAD指针。
 
+工作区与版本库之间的关系如下图：
+
+<img src="./images/github_1.png" style="zoom:50%;" />
 
 ### 查看代码状态 git status
 
@@ -52,8 +56,5 @@ git log
 git reset --hard HEAD~1 # 回退到上一个版本
 git reset --hard HEAD~2 # 回退到倒数第二个版本
 ```
-
-
-
 
 
