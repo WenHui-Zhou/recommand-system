@@ -202,3 +202,15 @@ git merge name
 git branch -d name
 ```
 
+
+
+## 大型项目模式
+
+采取建立分支-commit-push-Pull Request-merge的弯弯绕方式
+
+四条为什么分支-PR比直接push到master好的理由：
+
+- 通过PR可以保证代码质量
+- 通过PR可以缓解多人合作的冲突问题
+- 在自己的分支中可以修改历史
+- 通过PR代码的更新含有更丰富的上下文
