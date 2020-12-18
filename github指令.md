@@ -273,6 +273,7 @@ git push origin dev1:dev
 拉取远端分支到本地（解决3中远端与本地不同的问题）：
 
 ```
+切换到dev分支上：
 git pull <远程主机名> <远程分支名>:<本地分支名>
 git pull origin dev:dev
 ```
