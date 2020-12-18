@@ -264,6 +264,12 @@ git log --graph --pretty=oneline --abbrev-commit
 3. 成员在各自的分支上干活，然后提交到dev分支上
 4. dev 最终提交到master上
 
+如何从dev1分支push到dev分支：
+
+```
+git push origin dev1:dev
+```
+
 
 
 
