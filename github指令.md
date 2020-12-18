@@ -166,52 +166,53 @@ git将分支通过时间线进行管理，系统自动创建一个主分支，�
 
 合并分支的过程也很快，就是把master指向dev的当前提交，就完成了合并工作。合并完成之后将dev指针删除就删掉了dev分支。
 
-创建分支的命令：
+#### 创建分支的命令：
 
 ```
 git branch dev_name
 ```
 
-查看分支：
+#### 查看分支：
 
 ```
 git branch
 ```
 
-查看分支的关联情况：
+####查看分支的关联情况：
 
 ```
 git branch -a # 即分支对应的指针
 ```
 
-切换分支：
+#### 切换分支：
 
 ```
 git switch name  或者 git checkout name
 ```
 
-创建+切换分支：
+#### 创建+切换分支：
 
 ```
 git checkout -b name  或者 git switch -c name
 ```
 
-合并分支到主分支上：
+#### 合并分支到主分支上：
 
 ```
 git merge name
 ```
 
-删除分支：
+#### 删除分支：
 
 ```
 git branch -d name       删除本地分支
 git push origin -d name  删除远程分支
 ```
 
-提交结果到远端分支上：
+#### 提交结果到远端分支上：
 
 ```
+切换到dev上：
 git push origin dev:dev  # 第一个dev是近端的分支，第二个dev是远端的分支
 ```
 
@@ -257,6 +258,8 @@ git log --graph --pretty=oneline --abbrev-commit
 |/
 ```
 
+#### 分支原则
+
 在分支开发的过程中，需要遵守基本原则：
 
 1. 保持主分支的稳定，仅用来发布新版本
@@ -264,13 +267,13 @@ git log --graph --pretty=oneline --abbrev-commit
 3. 成员在各自的分支上干活，然后提交到dev分支上
 4. dev 最终提交到master上
 
-如何从dev1分支push到dev分支(解决3)：
+#### 如何从dev1分支push到dev分支(解决3)：
 
 ```
 git push origin dev1:dev
 ```
 
-拉取远端分支到本地（解决3中远端与本地不同的问题）：
+#### 拉取远端分支到本地（解决3中远端与本地不同的问题）：
 
 ```
 切换到dev分支上：
