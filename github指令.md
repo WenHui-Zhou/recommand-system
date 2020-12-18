@@ -240,7 +240,33 @@ git直接在文中标注了产生冲突的地方，直接在文中修改，然�
 git merge --no-ff -m "merge with no-ff" dev
 ```
 
-其中参数：--no--ff 禁用Fast Forward，-m为commit消息，dev为合并的分支
+其中参数：--no--ff 禁用Fast Forward，-m为commit消息，dev为合并的分支.
+
+可以用这个指令查看记录：
+
+```
+git log --graph --pretty=oneline --abbrev-commit
+```
+
+输出为：
+
+```
+*   6a4c6b7 (HEAD -> main) add with no ff
+|\
+| * e82698b (dev) change dev
+|/
+```
+
+在分支开发的过程中，需要遵守基本原则：
+
+1. 保持主分支的稳定，仅用来发布新版本
+2. 干活在dev分支上
+3. 成员在各自的分支上干活，然后提交到dev分支上
+4. dev 最终提交到master上
+
+
+
+
 
 
 
