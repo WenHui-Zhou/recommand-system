@@ -230,6 +230,20 @@ git push origin dev:dev  # 第一个dev是近端的分支，第二个dev是远�
 
 git直接在文中标注了产生冲突的地方，直接在文中修改，然后add,commit 即可消除冲突。
 
+### 分支策略
+
+当我们用`git merge dev `的时候，系统默认选择Fast Forward的形式进行merge，这种merge方式不留下任何的commit信息，可能对协作开发不利，因此我们禁用这种方式。
+
+用新分支dev做完修改之后，切换回main进行merge：
+
+```
+git merge --no-ff -m "merge with no-ff" dev
+```
+
+其中参数：--no--ff 禁用Fast Forward，-m为commit消息，dev为合并的分支
+
+
+
 ## 大型项目模式
 
 采取建立分支-commit-push-Pull Request-merge的弯弯绕方式
