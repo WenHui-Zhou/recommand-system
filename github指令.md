@@ -264,13 +264,18 @@ git log --graph --pretty=oneline --abbrev-commit
 3. 成员在各自的分支上干活，然后提交到dev分支上
 4. dev 最终提交到master上
 
-如何从dev1分支push到dev分支：
+如何从dev1分支push到dev分支(解决3)：
 
 ```
 git push origin dev1:dev
 ```
 
+拉取远端分支到本地（解决3中远端与本地不同的问题）：
 
+```
+git pull <远程主机名> <远程分支名>:<本地分支名>
+git pull origin dev:dev
+```
 
 
 
