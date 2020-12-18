@@ -281,7 +281,43 @@ git pull <远程主机名> <远程分支名>:<本地分支名>
 git pull origin dev:dev
 ```
 
+### bug 分支
 
+当我们遇到bug的时候，需要单独开一个分支解决这个bug。但是目前眼下分支的工作还没做完，我们希望先修改bug，因此需要把工作暂存起来。
+
+#### git stash
+
+这个指令将当前分支的工作保存起来，得以后恢复现场后继续工作。
+
+```
+git checkout dev
+git stash
+```
+
+然后开一个分支修复bug，修复完进行merge与普通branch一样的操作。当我们将bug解决完之后，需要继续之前没有完成的工作。
+
+#### git stash list
+
+查询保存的记录
+
+```
+git checkout dev
+git stash list
+```
+
+#### git stash pop 
+
+恢复保存的记录
+
+```
+git stash pop
+```
+
+现在的问题是，master上改了bug，但是分支上没改，好在github提供了cherry-pick使我们能够复制一个特定的提交到当前分支。
+
+```
+git cherry-pick 4c805e2
+```
 
 
 
