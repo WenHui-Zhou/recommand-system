@@ -319,6 +319,40 @@ git stash pop
 git cherry-pick 4c805e2
 ```
 
+### 删除一个未被merge的分支
+
+```
+git branch -D dev
+```
+
+## 多人协作
+
+### 查看远程信息
+
+```
+git remote
+```
+
+### 推送分支
+
+```
+git push origin master
+
+推送到其他分支：
+git push origin dev
+```
+
+### 多人的工作模式
+
+如果同时你和一个伙伴，在各自的分支上，同时修改的某个文件，将会引起冲突，多人工作的情况下可以按照下面的步骤进行：
+
+1. 首先尝试用`git push origin branch_name`看看是否可以直接上传
+2. 如果推送失败则证明远程版本比本地版本要新，需要用`git pull` 进行合并
+3. `git pull` 如果有冲突，需要远程分支名字和本地分支需要对应，执行`git branch --set-upstream-to=origin/dev dev` ，然后在pull这个结果
+4. 手动解决冲突之后在合并，最后提交
+
+
+
 
 
 ## 大型项目模式
