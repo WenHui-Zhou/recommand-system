@@ -353,6 +353,20 @@ git push origin dev
 
 
 
+### rebase
+
+由于多人协作，存在提交历史记录交叉，因此历史记录非常的混乱，因此使用rebase可以整理历史记录。使得时间线变成一条直线。是我们查看历史提交变化时比较方便。
+
+
+
+### 输出清晰的log
+
+```
+git log --graph --pretty=oneline --abbrev-commit
+```
+
+
+
 
 
 ## 大型项目模式
