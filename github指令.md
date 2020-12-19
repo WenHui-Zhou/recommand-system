@@ -367,6 +367,21 @@ git log --graph --pretty=oneline --abbrev-commit
 
 
 
+## 打标签
+
+标签的含义是给不同的commit起一个别名。
+
+- 命令`git tag <tagname>`用于新建一个标签，默认分支为当前所在分支，也可以指定一个commit id；
+- 命令`git tag -a <tagname> -m "blablabla..."`可以指定标签信息；
+- 命令`git tag`可以查看所有标签。
+
+删除标签：
+
+```
+git tag -d v0.1 # 本地
+git push origin :refs/tags/v0.9 # 远程
+```
+
 
 
 ## 大型项目模式
