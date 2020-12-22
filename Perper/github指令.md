@@ -38,6 +38,8 @@ git以分区的形式管理文件，主要是两大分区：
 
 <img src="./images/github_1.png" style="zoom:50%;" />
 
+<img src="/images/github_1.png" style="zoom:50%;" />
+
 因此代码提交的步骤可以看成：
 
 1. git add filename： 将文件从工作区提交到暂存区(index)中
