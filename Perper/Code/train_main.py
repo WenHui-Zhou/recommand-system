@@ -5,14 +5,14 @@
 # Create Time : 2020-12-23
 # Copyright (C)2020 All rights reserved.
 import sys
-from workflow.cd_workflow import run as user_cf
+from workflow.cf_workflow import run as cf
 
 def main():
     arg = sys.argv[1]
-    if arg == 'cf':
-        user_cf()
+    if 'cf' in arg:
+        cf(arg) # arg in [item_cf,user_cf]
     else:
-        print('args must in ["cf"]')
+        print('args must in ["item_cf,user_cf"]')
     sys.exit()
 
 if __name__ == '__main__':
