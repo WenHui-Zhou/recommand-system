@@ -384,6 +384,30 @@ git push origin :refs/tags/v0.9 # 远程
 
 
 
+## 特殊文件
+
+- .gitkeep：github不会追踪空文件夹，.gitkeep作用是是git忽略文件夹下的所有文件，但是保留文件夹
+- .gitignore：里头内容为不需要git追踪的文件，例如
+
+```.gitignore
+# Xcode
+build/
+*.pbxuser
+!default.perspectivev3
+xcuserdata
+*.xccheckout
+```
+
+在使用gitignore的时候，如果某些不希望被追踪的文件以及被add到git里头了，执行：
+
+```
+git rm -r --cached .
+```
+
+这一步清空add的记录，然后添加gitignore 之后在add。
+
+
+
 ## 大型项目模式
 
 采取建立分支-commit-push-Pull Request-merge的弯弯绕方式
@@ -394,3 +418,4 @@ git push origin :refs/tags/v0.9 # 远程
 - 通过PR可以缓解多人合作的冲突问题
 - 在自己的分支中可以修改历史
 - 通过PR代码的更新含有更丰富的上下文
+
