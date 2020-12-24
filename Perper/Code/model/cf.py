@@ -39,6 +39,35 @@ class BaseCf(ABC):
         cosine = union_len / math.sqrt(product)
         return cosine
 
+    @staticmethod
+    def _euclidean_silimar(target_vec,vec):
+        """
+        计算两个vec之间的距离，然后套用导数 1/(1 + d) 作为相似度(距离越大，相似度越小)
+        距离公式为：sqrt((x1-y1)^2 + (x2-y2)^2...))
+        对于一个one-hot 编码的数据来说，两个向量求异或
+        """
+        XOR_len = math.sqrt(len(set(target_vec) ^ set(vec)))
+        return 1.0 / (1 + XOR_len)
+
+    @staticmethod
+    def _coOccurrence_similar(target_vec,vec):
+        """
+        同现相似度
+        计算方式为：len(A & B)/ sqrt(len(A) * len(B))
+        """
+        union_len = len(set(target_vec) & set(vec))
+        product = len(target_vec) * len(vec)
+        return (union_len *1.0)/math.sqrt(product)
+
+    @staticmethod
+    def _tanimoto_similar(target_vec,vec):
+        """
+        计算公式：len(A & B) / (len(A) + len(B) - len(A & B))
+        """
+        union_len = len(set(target_vec) & set(vec))
+        return (union_len*1.0) / (len(target_vec) + len(vec) - union_len)
+        
+
     @abstractmethod
     def calculate(self,*args):
         """
@@ -59,7 +88,7 @@ class UserCf(BaseCf):
         target_movies = self.frame[self.frame['userId'] == target_user_id]['movieId']
         other_users_id = [i for i in set(self.frame['userId']) if i != target_user_id]
         other_movies = [self.frame[self.frame['userId'] == i]['movieId'] for i in other_users_id]
-        similar_list = [self._cosine_similar(target_movies,movies) for movies in other_movies]
+        similar_list = [self._tanimoto_similar(target_movies,movies) for movies in other_movies]
         similar_list = sorted(zip(other_users_id,similar_list),key = lambda x:x[1],reverse = True)
         return similar_list[:top_n]
 
