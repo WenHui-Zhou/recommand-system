@@ -123,7 +123,7 @@ class UserCf(BaseCf):
 
     def calculate(self,*args):
         """
-        实现抽象类，完成itemCF的服务
+        实现抽象类，完成UserCF的服务
         """
         target_user_id = args[0]
         top_n = args[1]
@@ -132,6 +132,76 @@ class UserCf(BaseCf):
         top_n_movies = self._get_top_n_items(top_n_users,candidate_movies,top_n)
         self.print_message(target_user_id,top_n,top_n_movies)
         return top_n_movies
+
+
+
+
+class ItemCf(BaseCf):
+    
+    def __init__(self):
+        super(ItemCf,self).__init__()
+
+    def _get_topN_similar_items(self,target_item_id,top_n):
+        """
+        计算与target item最相似的top_n个item
+        """
+        target_users = self.frame[self.frame['movieId'] == target_item_id]['userId']
+        other_items_id = [i for i in set(self.frame['movieId']) if i != target_item_id]
+        other_users = [self.frame[self.frame['movieId'] == i]['userId'] for i in other_items_id]
+        similar_list = [self._cosine_similar(target_users,user) for user in other_users]
+        similar_list = sorted(zip(other_items_id,similar_list),key = lambda x:x[1],reverse = True)
+        return similar_list[:top_n]
+
+    def _get_candidate_users(self,target_item_id):
+        """
+        find all the users that user id did not meet the target movie before.
+        """
+        target_users = set(self.frame[self.frame['movieId'] == target_item_id]['userId'])
+        other_movie_users = set(self.frame[self.frame['movieId']!=target_item_id]['userId'])
+        candidate_users = list(target_users^other_movie_users)
+        return candidate_users
+
+    def _get_top_n_users(self,top_n_items,candidate_users,top_n):
+        """
+        通过感兴趣程度来对用户排序
+        interest = sum(sim * normalize_rate)
+        """
+        top_n_item_data = [self.frame[self.frame['movieId'] == k] for k,_ in top_n_items]
+        interest_list = []
+        for user_id in candidate_users:
+            tmp = []
+            for item_data in top_n_item_data:
+                if user_id in item_data['userId'].values:
+                    tmp.append(item_data[item_data['userId'] == user_id]['rating'].values[0]/5.0)
+                else:
+                    tmp.append(0)
+            interest = sum(top_n_items[i][1]*tmp[i] for i in range(len(top_n_items)))
+            interest_list.append((user_id,interest))
+        interest_list = sorted(interest_list,key=lambda x:x[1],reverse=True)
+        return interest_list[:top_n]
+
+    def print_message(self,target_item_id,top_n,recommands_users_id):
+        mess = "基于商品的协同过滤算法,传入商品id，为商品(id:{})得到的前{}推荐的用户如下：\n".format(target_item_id,top_n)
+        print(mess)
+
+        target_movie_data = self.movie_frame[self.movie_frame['movieId'] == target_item_id]
+
+        print('给该电影推荐的用户（部分）：\n')
+        print('| 用户 | 感兴趣度 |')
+        for user_id,interest in recommands_users_id:
+            print("| {} | {} |".format(user_id,str(interest)))
+
+    def calculate(self,*args):
+        """
+        实现抽象类，完成itemCF的服务
+        """
+        target_item_id = args[0]
+        top_n = args[1]
+        top_n_items = self._get_topN_similar_items(target_item_id,top_n)
+        candidate_users = self._get_candidate_users(target_item_id)
+        top_n_users = self._get_top_n_users(top_n_items,candidate_users,top_n)
+        self.print_message(target_item_id,top_n,top_n_users)
+        return top_n_users
 
 
 
