@@ -3,3 +3,6 @@
 Perper/Code/data/ml-latest-small/*
 # except for gitkeep
 !.gitkeep
+
+*.swp
+*.pyc
