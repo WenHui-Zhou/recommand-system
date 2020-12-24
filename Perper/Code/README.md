@@ -14,4 +14,4 @@ manage选择算法-> workflow加载具体算法的工作流-> model调用模型�
 
 ## 代码执行方法
 
-python train_main.py [cf]
+python train_main.py [item_cf/user_cf]

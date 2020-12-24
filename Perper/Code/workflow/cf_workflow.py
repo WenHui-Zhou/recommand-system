@@ -13,7 +13,7 @@ def run(arg):
             'file not exits in path,please download the dataset before this.'
     print('algrithm begin ... ')
     start = time.time()
-    target_id = 1 # 用户的id
+    target_id = 1 # 用户或商品的id
     top_n = 10   #  前几条记录
     if arg == 'item_cf':
         from model.cf import ItemCf as Cf
