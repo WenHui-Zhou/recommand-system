@@ -65,11 +65,11 @@ CBOW的输入是one-hot，输出是一个向量。模型的算是函数可以视
 
 embedding 相当于对one-hot做了平滑，one-hot相当于对embedding做了max pooling。
 
-<img src="./images/word2vec_1.png">
+<img src="./images/Word2vec_1.png">
 
 embedding的产生过程如下：
 
-<img src = "./images/word2vec_2.png">
+<img src = "./images/Word2vec_2.png">
 
 各种embedding的前沿研究：https://www.jiqizhixin.com/articles/2020-06-30-11
 
