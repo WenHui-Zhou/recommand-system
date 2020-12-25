@@ -59,7 +59,7 @@ git status可以查看：
 #### git diff参数：
 
 1. 不带参数：如果index不为空，对比工作区和index，如果index为空则对比工作区和commit
-2. git diff branch1 branch2  对比不同分支的不同（-stat 仅列出不同文件）
+2. git diff branch...branch2  对比不同分支的不同（-stat 仅列出不同文件，注意branch之间有...号两个，三个都行）
 3. git diff HEAD 比较工作区与最新的版本库
 
 git status的输出不是很好看懂，下面介绍一下：
