@@ -1,5 +1,18 @@
 [TOC]
 
+- [word2vec 基于内容相似的召回](#word2vec----------)
+  * [前言](#--)
+  * [Word2Vec 算法](#word2vec---)
+    + [语言模型](#----)
+    + [CBOW语言模型](#cbow----)
+      - [hierarchical softmax](#hierarchical-softmax)
+      - [negative sampling](#negative-sampling)
+    + [one-hot 与word embedding的区别](#one-hot--word-embedding---)
+  * [代码实现](#----)
+      - [实验数据](#----)
+      - [gensim](#gensim)
+      - [实现思路](#----)
+
 # word2vec 基于内容相似的召回
 
 
@@ -48,9 +61,46 @@ CBOW的输入是one-hot，输出是一个向量。模型的算是函数可以视
 
 每次迭代过程中有大量的输出向量需要更新，为了解决这个问题，negative sampling 提出了部分更新的方法。此外在训练的时候需要负样本。通过选择一种概率分布来选择得到的负样本。
 
+### one-hot 与word embedding的区别
+
+embedding 相当于对one-hot做了平滑，one-hot相当于对embedding做了max pooling。
+
+<img src="./images/word2vec_1.png">
+
+embedding的产生过程如下：
+
+<img src = "./images/word2vec_2.png">
+
+各种embedding的前沿研究：https://www.jiqizhixin.com/articles/2020-06-30-11
+
 
 
 ## 代码实现
 
 
+
+#### 实验数据
+
+**数据来源kaggle数据集[kaggle Online Retail](https://archive.ics.uci.edu/ml/machine-learning-databases/00352/)的2010年到2011年英国某家网上零售商店的销售数据。一共有用户ID，购买日期，购买数量，商品单价等八个字段。共包含541909个记录。**
+
+> InvoiceNo/发票号码：每笔交易分配唯一的6位数，需注意退货订单的代码以字母'c'开头。
+> StockCode/库存编号：每个不同的产品分配唯一的5位整数。
+> Description/产品信息：对每件产品的简略描述。
+> Quantity/数量：每笔交易的每件产品的数量。
+> InvoiceDate/发票日期和时间：每笔交易发生的日期和时间。
+> UnitPrice/单价：单位产品价格。
+> CustomerID/顾客编号：每个客户分配唯一的5位整数。
+> Country/国家：每个客户所在国家/地区的名称。
+
+<img src = "./images/word2vec_3.png">
+
+
+
+#### gensim
+
+Gensim是一款开源的第三方Python工具包，用于从原始的非结构化的文本中，无监督地学习到文本隐层的主题向量表达。它支持包括TF-IDF，LSA，LDA，和word2vec在内的多种主题模型算法，支持流式训练，并提供了诸如相似度计算，信息检索等一些常用任务的API接口。
+
+#### 实现思路
+
+代码部分其实比较简单，利用gensim训练好的现成的word2vec模型。将数据集处理成编号：描述。然后将编号输入model中得出最接近的推荐。
 
