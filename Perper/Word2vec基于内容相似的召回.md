@@ -1,5 +1,18 @@
 [TOC]
 
+- [word2vec 基于内容相似的召回](#word2vec----------)
+  * [前言](#--)
+  * [Word2Vec 算法](#word2vec---)
+    + [语言模型](#----)
+    + [CBOW语言模型](#cbow----)
+      - [hierarchical softmax](#hierarchical-softmax)
+      - [negative sampling](#negative-sampling)
+    + [one-hot 与word embedding的区别](#one-hot--word-embedding---)
+  * [代码实现](#----)
+      - [实验数据](#----)
+      - [gensim](#gensim)
+      - [实现思路](#----)
+
 # word2vec 基于内容相似的召回
 
 
