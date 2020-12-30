@@ -57,7 +57,7 @@ LR = \frac{1}{1 + e^{-wx}}
 $$
 有没有办法从模型的角度加入这种特征组合呢？一个比较直观的思路就是在上式中加入二项式特征组合。FM模型则是在二项式特征模型基础上对二阶参数进行的因子分解：
 
-<img src = "./images/fm_1.png">
+<img src = "../images/fm_1.png">
 
 因子分解降低了算法的复杂度，同时克服了大量稀疏数据难以学到有效特征组合，二阶参数特征估计不准确的问题。
 
@@ -95,7 +95,7 @@ FM中有一阶和二阶两部分数据。
 
 ### 代码结果
 
-<img src="./images/fm_2.png">
+<img src="../images/fm_2.png">
 
-<img src='./images/fm_3.png'>
+<img src='../images/fm_3.png'>
 

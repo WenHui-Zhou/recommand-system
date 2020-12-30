@@ -36,7 +36,7 @@ git以分区的形式管理文件，主要是两大分区：
 
 工作区与版本库之间的关系如下图：
 
-<img src="./images/github_1.png" style="zoom:50%;" />
+<img src="../images/github_1.png" style="zoom:50%;" />
 
 <img src="/images/github_1.png" style="zoom:50%;" />
 
