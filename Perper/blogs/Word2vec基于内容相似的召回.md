@@ -45,7 +45,7 @@ $$
 
 CBOW的输入是one-hot，输出是一个向量。模型的算是函数可以视为一种交叉熵。通过最小化交叉熵的方法，对模型参数进行更新。CBOW通过上下文来预测当前的词，他的网络结构如下：
 
-<img src = "./images/CBOW.png">
+<img src = "../images/CBOW.png">
 
 其中输入为one-hot编码，输出为词典的长度，每一个位置表示该词出现的概率。
 
@@ -65,11 +65,11 @@ CBOW的输入是one-hot，输出是一个向量。模型的算是函数可以视
 
 embedding 相当于对one-hot做了平滑，one-hot相当于对embedding做了max pooling。
 
-<img src="./images/Word2vec_1.png">
+<img src="../images/Word2vec_1.png">
 
 embedding的产生过程如下：
 
-<img src = "./images/Word2vec_2.png">
+<img src = "../images/Word2vec_2.png">
 
 各种embedding的前沿研究：https://www.jiqizhixin.com/articles/2020-06-30-11
 
@@ -92,7 +92,7 @@ embedding的产生过程如下：
 > CustomerID/顾客编号：每个客户分配唯一的5位整数。
 > Country/国家：每个客户所在国家/地区的名称。
 
-<img src = "./images/word2vec_3.png">
+<img src = "../images/word2vec_3.png">
 
 
 
