@@ -20,8 +20,11 @@ def main():
     elif arg == 'FM':
         from workflow.fm_workflow import run as FM
         FM(arg)
+    elif arg == 'gbdt':
+        from workflow.gbdt_workflow import run as GBDT
+        GBDT(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt"]')
     sys.exit()
 
 if __name__ == '__main__':
