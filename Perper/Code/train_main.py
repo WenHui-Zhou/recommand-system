@@ -23,6 +23,9 @@ def main():
     elif arg == 'gbdt':
         from workflow.gbdt_workflow import run as GBDT
         GBDT(arg)
+    elif arg == 'gbdt_lr':
+        from workflow.gbdtLR_workflow import run as GBDTLR
+        GBDTLR(arg)
     else:
         print('args must in ["item_cf,user_cf,LR,FM,gbdt"]')
     sys.exit()
