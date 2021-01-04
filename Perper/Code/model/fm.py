@@ -46,7 +46,6 @@ class FM_Layer(Layer):
         dense_inputs,sparse_inputs = inputs
         # one-hot embedding 
         sparse_inputs = tf.concat(
-#            [tf.one_hot(tf.dtypes.cast(sparse_inputs[:,i],tf.int32), depth=self.sparse_feature_columns[i]['feat_num']) \
             [tf.one_hot(tf.dtypes.cast(sparse_inputs[:,i],tf.int32), depth=self.sparse_feature_columns[i]['embed_dim']) \
             for i in range(sparse_inputs.shape[1])],axis=1)
         stack = tf.concat([dense_inputs, sparse_inputs],axis=1)
