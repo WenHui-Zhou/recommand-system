@@ -26,6 +26,9 @@ def main():
     elif arg == 'gbdt_lr':
         from workflow.gbdtLR_workflow import run as GBDTLR
         GBDTLR(arg)
+    elif arg == 'gcforest':
+        from workflow.gcforest_workflow import run as gcForest 
+        gcForest(arg)
     else:
         print('args must in ["item_cf,user_cf,LR,FM,gbdt"]')
     sys.exit()
