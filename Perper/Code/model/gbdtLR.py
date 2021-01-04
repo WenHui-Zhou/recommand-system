@@ -16,6 +16,7 @@ from sklearn.linear_model import LogisticRegression
 from sklearn.preprocessing import LabelEncoder,MinMaxScaler
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import log_loss
+from sklearn import metrics
 
 global_args = None
 
@@ -60,15 +61,21 @@ class GBDTLR:
     def _build_train_model(self):
         print('build model...')
         train,test = train_test_split(self.data,test_size=global_args.test_size)
-        train_X = train[self.dense_features + self.sparse_features].values
-        sparse_inputs = tf.concat(
-            [tf.one_hot(tf.dtypes.cast(sparse_inputs[:,i],tf.int32), depth=self.sparse_feature_columns[i]['embed_dim']) \
-            for i in range(sparse_inputs.shape[1])],axis=1)
+#        train_X = train[self.dense_features + self.sparse_features].values
+#        sparse_inputs = tf.concat(
+#            [tf.one_hot(tf.dtypes.cast(sparse_inputs[:,i],tf.int32), depth=self.sparse_feature_columns[i]['embed_dim']) \
+#            for i in range(sparse_inputs.shape[1])],axis=1)
+        train_X = train[self.dense_features].values
         train_X = np.hstack((train_X,train[self.sparse_features].values.astype('int32')))
+        train_X = pd.DataFrame(train_X, columns = self.dense_features + self.sparse_features)
         train_Y = train['label'].values.astype('int32')
-        test_X = test[self.dense_features+self.sparse_features].values
+        train_Y = pd.DataFrame(train_Y, columns = ['label'])
+#        test_X = test[self.dense_features+self.sparse_features].values
+        test_X = test[self.dense_features].values
         test_X = np.hstack((test_X,test[self.sparse_features].values.astype('int32')))
+        test_X = pd.DataFrame(test_X, columns = self.dense_features + self.sparse_features)
         test_Y = test['label'].values.astype('int32')
+        test_Y = pd.DataFrame(test_Y, columns = ['label'])
 
         print('train begin...')
         # 开始训练gbdt，使用100棵树，每棵树64个节点
@@ -81,23 +88,21 @@ class GBDTLR:
                                        learning_rate = global_args.learning_rate,
                                        n_estimators = global_args.num_estimators,
                                        random_state = 2021)
-        import pdb
-        pdb.set_trace()
         gbdt_model.fit(train_X,train_Y,
-                      eval_set = [(train_X,test_X),(train_Y,test_Y)],
+                      eval_set = [(train_X,train_Y),(test_X,test_Y)],
                       eval_names = ['train','val'],
                       eval_metric = 'binary_logloss',
                       verbose=0)
 
         # 得到每一条训练数据落在每颗树的叶子节点上,预测结果返回叶子节点的序号(0-63)
-        gbdt_feat_train = model.predict(train,pred_leaf = True)
-        gbdt_feat_test = model.predict(test,pred_leaf = True)
+        gbdt_feat_train = gbdt_model.predict(train_X,pred_leaf = True)
+        gbdt_feat_test = gbdt_model.predict(test_X,pred_leaf = True)
         # 将32课树的序号构成DF,方便one-hot
         gbdt_feat_name = ['gbdt_tree_' + str(i) for i in range(global_args.num_estimators)]
         df_train_gbdt_feats = pd.DataFrame(gbdt_feat_train,columns = gbdt_feat_name)
         df_test_gbdt_feats =  pd.DataFrame(gbdt_feat_test,columns = gbdt_feat_name)
         train_len = df_train_gbdt_feats.shape[0]
-        result = pd.concat(df_train_gbdt_feats,df_test_gbdt_feats)
+        result = pd.concat([df_train_gbdt_feats,df_test_gbdt_feats])
 
         for feat in gbdt_feat_name:
             le = LabelEncoder()
@@ -115,9 +120,10 @@ class GBDTLR:
 
         print('model evaluate...')
         # 预测结果的好坏
-        y_pred = lr.predict_proba[test][:,1]
+        y_pred = lr.predict_proba(test_data)[:,1]
+        score = metrics.roc_auc_score(test_Y.values, y_pred)
+        print(score)
 
-        
 
 
     def calculate(self,*args):
