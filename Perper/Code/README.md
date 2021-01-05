@@ -9,9 +9,14 @@ manage选择算法-> workflow加载具体算法的工作流-> model调用模型�
 ## 已实现的算法
 
 - 协同过滤算法
+- word2vec算法
+- FM算法
+- GBDT算法
+- gcforest算法
+- LR算法
 
 
 
 ## 代码执行方法
 
-python train_main.py [item_cf/user_cf]
+python train_main.py [item_cf/user_cf/gbdt/gbdt_lr/gcforest/word2vec/LR/FM]

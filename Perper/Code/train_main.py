@@ -8,7 +8,7 @@ import sys
 
 def main():
     arg = sys.argv[1]
-    if 'cf' in arg:
+    if arg in ['item_cf','user_cf']:
         from workflow.cf_workflow import run as cf
         cf(arg) # arg in [item_cf,user_cf]
     elif arg == 'word2vec':
@@ -27,10 +27,10 @@ def main():
         from workflow.gbdtLR_workflow import run as GBDTLR
         GBDTLR(arg)
     elif arg == 'gcforest':
-        from workflow.gcforest_workflow import run as gcForest 
+        from workflow.gcForest_workflow import run as gcForest 
         gcForest(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest"]')
     sys.exit()
 
 if __name__ == '__main__':
