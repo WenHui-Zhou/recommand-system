@@ -5,3 +5,4 @@
 - 2020.12.28：perper添加FM理论部分
 - 2020.12.31：perper添加GBDT理论和代码
 - 2020.01.04：perper添加GBDT-LR理论和代码
+- 2020.01.05：perper添加gcforest理论和代码
