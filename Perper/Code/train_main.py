@@ -29,8 +29,11 @@ def main():
     elif arg == 'gcforest':
         from workflow.gcForest_workflow import run as gcForest 
         gcForest(arg)
+    elif arg == 'dnn':
+        from workflow.dnn_workflow import run as DNN 
+        DNN(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn"]')
     sys.exit()
 
 if __name__ == '__main__':
