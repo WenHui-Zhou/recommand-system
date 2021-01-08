@@ -19,50 +19,17 @@ from tqdm import tqdm
 import os
 import random
 
+from model.lib.dnn_evaluate import evaluate_model
+
 global_args = None
-
-class FM_Layer(Layer):
-    # 需要重写__init__,build(),call() 方法
-    def __init__(self,feature_columns):
-        super(FM_Layer,self).__init__()
-        self.dense_feature_columns,self.sparse_feature_columns = feature_columns
-        # 将所有特征直接拼接起来，作为输入，输入的总长度
-#        self.feature_length = sum([feat['feat_num'] for feat in self.sparse_feature_columns]) + \
-        self.feature_length = sum([feat['embed_dim'] for feat in self.sparse_feature_columns]) + \
-                len(self.dense_feature_columns)
-
-    def build(self,input_shape):
-        self.w0 = self.add_weight(name='w0',shape=(1,),\
-                                  initializer=tf.zeros_initializer(),trainable=True)
-        self.w = self.add_weight(name='w',shape=(self.feature_length, 1), \
-                                 initializer = tf.random_normal_initializer(), \
-                                 regularizer=l2(global_args.w_reg),trainable=True)
-        self.V = self.add_weight(name='V',shape=(global_args.latent_size,self.feature_length), \
-                                 initializer = tf.random_normal_initializer(), \
-                                 regularizer=l2(global_args.v_reg),trainable=True)
-
-    def call(self,inputs,**kwargs):
-        dense_inputs,sparse_inputs = inputs
-        # one-hot embedding 
-        sparse_inputs = tf.concat(
-            [tf.one_hot(tf.dtypes.cast(sparse_inputs[:,i],tf.int32), depth=self.sparse_feature_columns[i]['embed_dim']) \
-            for i in range(sparse_inputs.shape[1])],axis=1)
-        stack = tf.concat([dense_inputs, sparse_inputs],axis=1)
-        # first order
-        first_order = self.w0 + tf.matmul(stack,self.w)
-        # second_order
-        second_order = 0.5 * tf.reduce_sum(
-            tf.pow(tf.matmul(stack,tf.transpose(self.V)),2) -
-            tf.matmul(tf.pow(stack,2) , tf.pow(tf.transpose(self.V), 2)),axis=1,keepdims=True)
-        outputs = first_order + second_order
-        return outputs
 
 class DNN_model(tf.keras.Model):
 
     def __init__(self,item_feat_col,maxlen=40,hidden_units=128,activation='relu',embed_reg=1e-6):
         super(DNN_model,self).__init__()
-        self.maxLen = maxlen
-        self.item_fea_col = item_feat_col
+        self.maxlen = maxlen
+        self.item_feat_col = item_feat_col
+        embed_dim = self.item_feat_col['embed_dim']
         # item embedding 
         self.item_embedding = Embedding(
             input_dim = self.item_feat_col['feat_num'],
@@ -79,13 +46,13 @@ class DNN_model(tf.keras.Model):
         seq_inputs, item_inputs = inputs
         mask = tf.cast(tf.not_equal(seq_inputs,0),dtype = tf.float32)
         seq_embed = self.item_embedding(seq_inputs)
-        seq_embed *= self.expand_dims(seq_inputs)
+        seq_embed *= tf.expand_dims(mask,axis = -1)
         seq_embed_mean = tf.reduce_mean(seq_embed,axis=1)
         user_embed = self.dense(seq_embed_mean)
         user_embed = self.dense2(user_embed)
 
         item_embed = self.item_embedding(tf.squeeze(item_inputs,axis=-1))
-        outputs = tf.nn.sigmoid(tf.reduce_sum(tf.multiply(user_embed,item_embed),axis=1,keep_dims=True))
+        outputs = tf.nn.sigmoid(tf.reduce_sum(tf.multiply(user_embed,item_embed),axis=1,keepdims=True))
         return outputs
 
     def summary(self,**kwargs):
@@ -105,7 +72,7 @@ class DNN:
         # 定义网络参数，以及训练的时候用到的参数
         parser = argparse.ArgumentParser()
         parser.add_argument('algrithom',type=str,default="dnn",help = 'the pratice method')
-        parser.add_argument('activation',type=str,default="relu",help = 'the pratice method')
+        parser.add_argument('--activation',type=str,default="relu",help = 'the pratice method')
         parser.add_argument('--learning_rate',type=float,default=0.001,help = 'the learning rate of the model')
         parser.add_argument('--epochs',type=int,default=30,help = 'how many time we train the model')
         parser.add_argument('--batch_size',type=int,default=512,help = 'a batch data size')
@@ -185,10 +152,10 @@ class DNN:
 
     def calculate(self,*args):
 
-        train_X,trainY = self.train
+        train_X,train_Y = self.train
         val_X,val_Y = self.val
         # build model
-        self.model = DNN_model(self.item_fea_col,global_args.maxlen,golbal_args.hidden_unit, \
+        self.model = DNN_model(self.item_fea_col,global_args.maxlen,global_args.hidden_unit, \
                                global_args.activation,global_args.embed_reg)
         self.model.summary() # 输出模型的参数
         # ======== model checkpoint === 
@@ -209,5 +176,5 @@ class DNN:
             )
         # ======== evaluate
             if epoch % 5 == 0:
-                pass
-
+                hit_rate,ndcg = evaluate_model(self.model,self.test,global_args.K)
+                print('iteration %d fit, evaluate: HR = %.4f, NDCG = %.4f' % (epoch,hit_rate,ndcg))
