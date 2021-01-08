@@ -1,9 +1,5 @@
 # Cying
 
-## Some Fantasy Work
-
-- 1
-
 
 # Perer
 
@@ -18,3 +14,4 @@
 - [推荐系统排序算法--树模型](./Perper/blogs/推荐系统排序算法--树模型.md)
 - [集成学习](./Perper/blogs/集成学习.md)
 - [推荐系统排序算法--深度学习模型.md](./Perper/blogs/推荐系统排序算法--深度学习模型.md)
+- [Tensroflow2.0快记（DNN为例）](./Perper/blogs/Tensorflow2.0快记.md)
