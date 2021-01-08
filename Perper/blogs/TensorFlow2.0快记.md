@@ -1,6 +1,26 @@
 [TOC]
 
-# TensorFlow 2.0速记
+- [TensorFlow 2.0速记（DNN为例）](#tensorflow-20---dnn---)
+  * [前言](#--)
+  * [数据的读取](#-----)
+  * [数据的预处理](#------)
+  * [超参设置](#----)
+  * [模型搭建](#----)
+    + [使用sequence](#--sequence)
+    + [模块化子类](#-----)
+  * [优化器以及损失函数](#---------)
+  * [度量方法](#----)
+  * [训练过程](#----)
+  * [模型的加载与保存](#--------)
+  * [DNN训练movieLens数据集](#dnn--movielens---)
+    + [DNN代码](#dnn--)
+      - [评价指标：](#-----)
+    + [实验结果](#----)
+  * [使用anaconda 创建、安装tensorflow2.0 虚拟环境](#--anaconda------tensorflow20-----)
+    + [conda 使用语法](#conda-----)
+    + [安装步骤](#----)
+
+# TensorFlow 2.0速记（DNN为例）
 
 ## 前言
 
@@ -134,24 +154,44 @@ model.fit(train_images,
 
 ## DNN训练movieLens数据集
 
-### DNN训练movieLens思路
+### DNN代码
 
+通过处理movieLens数据集，使得一个user对应一个观看电影的序列，同时随机生成负样本，同个user对应着一个观看电影的负样本序列。
 
+然后通过padding使得数据的长度一致，输入embedding层生成稠密的embedding，最后输入DNN中参与计算，最后通过sigmoid输出，并最小话交叉熵损失。
 
-### 代码思路
+#### 评价指标：
 
+**HR：**命中率，即推荐列表中是否存在用户点击过的物品。
+$$
+HR = \frac{1}{N} \sum^{N}_{i=1}hits(i)
+$$
+N表示用户的总数，hits(i)表示第i个用户访问过得物品是否在列表中。是则为1。
 
+**NDGC：**归一化折损累计增益，更加注重推荐的物品的排序先后，表达式如下：
+$$
+NDGC = \frac{1}{N}\sum^{N}_{i=1}\frac{1}{\log_2(p_i + 1)}
+$$
+N表示用户总数，$p_i$ 则是第i个用户真实访问值在推荐列表中的位置。若不存在，则为无穷大。
+
+**MRR：**平均倒数排名，即更加强调物品的顺序：
+$$
+MRR = \frac{1}{N} \sum^{N}_{i=1} \frac{1}{p_i}
+$$
+其中N表示用户的总数，p表示用户正式访问物品在推荐列表中的位置。不存在则无穷。
 
 ### 实验结果
 
+<img src="../images/dnn_2.png">
 
+<img src = "../images/dnn_3.png">
 
 ## 使用anaconda 创建、安装tensorflow2.0 虚拟环境
 
 ### conda 使用语法
 
 - 创建环境：conda create –name <env_name> <package_names>
-- 激活环境：activate <env_name>
+- 激活环境：source activate <env_name>
 - 退出环境：deactivate
 - 删除环境：conda remove –name <env_name> –all
 - 环境列表：conda env list
