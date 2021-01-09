@@ -8,3 +8,4 @@
 - 2020.01.05：perper添加gcforest理论和代码
 - 2020.01.06：perper添加深度模型理论部分
 - 2020.01.07：perper添加DNN理论以及代码，以及tf2.0的代码部分
+- 2020.01.09：perper添加wide and deep理论部分
