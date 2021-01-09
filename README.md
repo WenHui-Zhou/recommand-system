@@ -15,4 +15,4 @@
 - [集成学习](./Perper/blogs/集成学习.md)
 - [推荐系统排序算法--深度学习模型](./Perper/blogs/推荐系统排序算法--深度学习模型.md)
 - [Tensroflow2.0快记（DNN为例）](./Perper/blogs/TensorFlow2.0快记.md)
-- [wide_and_deep模型](./Perper/blogs/wide_and_deep.md)
+- [wide_and_deep模型](./Perper/blogs/wide_and_deep模型.md)
