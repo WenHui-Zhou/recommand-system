@@ -1,5 +1,15 @@
 [TOC]
 
+- [wide and deep 模型](#wide-and-deep---)
+  * [推荐系统遇到的挑战](#---------)
+  * [Wide AND Deep](#wide-and-deep)
+    + [Wide 模型](#wide---)
+    + [Deep 模型](#deep---)
+    + [模型联合训练](#------)
+  * [Wide and Deep 系统实现](#wide-and-deep-----)
+    + [推荐过程](#----)
+    + [代码实现](#----)
+
 # wide and deep 模型
 
 在深度模型出现之前，工业界基于GBDT和LR模型做出了非常多的特征工程工作，挖掘了非常多的有效特征。google提出的wide and deep模型：提出采用深度学习来解决非线性部分，沿用之前的工作来解决线性部分，取得了较好的效果。
@@ -52,15 +62,27 @@ $$
 
 ## Wide and Deep 系统实现
 
-
-
 ### 推荐过程
 
+当用户点击一个广告的时候，会产生一条记录，这条记录包含着用户特征和上下文特征，推荐系统会根据这个返回一个推荐列表。
 
+通常的过程是分为召回阶段，将备选广告大量的减小。然后为精排阶段，用一些比较重的模型，对商品进行排序，得到推荐列表。
 
 ### 代码实现
 
+**数据准备：** 数据使用ctrteo的数据。将sparse，dense数据分开，然后sparse数据进行embedding
 
+**网络训练：** 网络使用wide and deep结构，wide就是一层dense，输入为dense数据，deep是三层dense，输入为sparse + dense。最后将wide和deep的输出共同输入到dense层后经过sigmoid输出得到最后的结果。
+
+**代码结果：**
+
+<img src = "../images/wdn_3.png">
+
+由于数据量比较少，并且训练的次数不多，因此test的AUC为0.632。
+
+
+
+按照树上的书法，wide部分的输入应该交叉后的sparse + sparse，deep部分输入应该为连续数据，但是与这里的实现不同。个人认同书上的输入。
 
 
 
