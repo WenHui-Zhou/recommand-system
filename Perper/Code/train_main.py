@@ -32,8 +32,11 @@ def main():
     elif arg == 'dnn':
         from workflow.dnn_workflow import run as DNN 
         DNN(arg)
+    elif arg == 'wdl':
+        from workflow.wdl_workflow import run as WDL 
+        WDL(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl"]')
     sys.exit()
 
 if __name__ == '__main__':
