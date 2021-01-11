@@ -10,3 +10,4 @@
 - 2020.01.07：perper添加DNN理论以及代码，以及tf2.0的代码部分
 - 2020.01.09：perper添加wide and deep理论部分
 - 2020.01.10：perper添加wide and deep代码部分
+- 2020.01.11：perper添加deepFM理论部分
