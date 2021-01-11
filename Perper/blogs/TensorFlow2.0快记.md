@@ -194,7 +194,7 @@ $$
 - 激活环境：source activate <env_name>
 - 退出环境：deactivate
 - 删除环境：conda remove –name <env_name> –all
-- 环境列表：conda env list
+- 环境列表：conda env list; conda info -e
 
 ### 安装步骤
 
@@ -207,3 +207,24 @@ conda activate ~/anaconda3/envs/tensorflow2.0/
 
 2. 安装TensorFlow2.0
    pip install tensorflow==2.0.0-beta -i https://pypi.tuna.tsinghua.edu.cn/simple
+
+### conda 配置cuda环境
+
+由于有时候主机的cuda和自己的tensorflow版本不同的问题，导致tensorflow无法使用。这时候，可以用conda创建虚拟环境：
+
+```
+conda create -name Zhou python=python3.6
+conda install cudatoolkit=8.0
+conda install cudnn=6.0
+```
+
+然后去找合适和TensorFlow版本：
+
+```shell
+anaconda search -t conda tensorflow 
+# 找到合适的名字tmp之后
+anaconda show tmp
+# 找到具体的安装版本链接 link
+conda install link
+```
+
