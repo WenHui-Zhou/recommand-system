@@ -35,8 +35,11 @@ def main():
     elif arg == 'wdl':
         from workflow.wdl_workflow import run as WDL 
         WDL(arg)
+    elif arg == 'deepfm':
+        from workflow.deepfm_workflow import run as DeepFM 
+        DeepFM(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm"]')
     sys.exit()
 
 if __name__ == '__main__':
