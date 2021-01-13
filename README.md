@@ -17,4 +17,5 @@
 - [Tensroflow2.0快记（DNN为例）](./Perper/blogs/TensorFlow2.0快记.md)
 - [wide_and_deep模型](./Perper/blogs/wide_and_deep模型.md)
 - [DeepFM模型](./Perper/blogs/DeepFM模型.md)
+- [youtube推荐系统](./Perper/blogs/youtube推荐系统.md)
 
