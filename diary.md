@@ -12,3 +12,4 @@
 - 2020.01.10：perper添加wide and deep代码部分
 - 2020.01.11：perper添加deepFM理论部分
 - 2020.01.12：perper添加deepFM代码部分
+- 2020.01.13：perper添加youtube召回模型理论
