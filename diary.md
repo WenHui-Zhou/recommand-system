@@ -13,3 +13,4 @@
 - 2020.01.11：perper添加deepFM理论部分
 - 2020.01.12：perper添加deepFM代码部分
 - 2020.01.13：perper添加youtube召回模型理论
+- 2020.01.14：perper添加youtube排序模型理论以及模型的解释
