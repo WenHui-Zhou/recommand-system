@@ -38,8 +38,11 @@ def main():
     elif arg == 'deepfm':
         from workflow.deepfm_workflow import run as DeepFM 
         DeepFM(arg)
+    elif arg == 'youtube':
+        from workflow.youtube_workflow import run as Youtube 
+        Youtube(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm,youtube"]')
     sys.exit()
 
 if __name__ == '__main__':
