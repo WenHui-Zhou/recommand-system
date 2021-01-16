@@ -240,4 +240,21 @@ $$
 
 ## 代码实现
 
- 
+ ### 召回模型
+
+#### 数据准备
+
+使用MovieLens-1M数据集，数据格式如下：
+
+| userId | MovieId | rating | timestamp |
+| ------ | ------- | ------ | --------- |
+| 1      | 1       | 4      | 964982703 |
+
+使用数据：
+
+userId1：{timestamp1:movie1,timestamp2:movie2 ...}
+
+即用户观看历史，以及example age。
+
+
+

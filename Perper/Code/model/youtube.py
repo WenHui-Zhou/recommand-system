@@ -23,38 +23,11 @@ import os
 
 global_args = None
 
-class FM(Layer):
-    # 需要重写__init__,build(),call() 方法
-    def __init__(self,k=10,w_reg = 1e-4,v_reg = 1e-4):
-        super(FM,self).__init__()
-        self.k = k
-        self.w_reg = w_reg
-        self.v_reg = v_reg
+class youtube_recall_model(tf.keras.Model):
 
-    def build(self,input_shape):
-        self.w0 = self.add_weight(name='w0',shape=(1,),\
-                                  initializer=tf.zeros_initializer(),trainable=True)
-        self.w = self.add_weight(name='w',shape=(input_shape[-1], 1), \
-                                 initializer = 'random_uniform', \
-                                 regularizer=l2(self.w_reg),trainable=True)
-        self.V = self.add_weight(name='V',shape=(self.k,input_shape[-1]), \
-                                 initializer = 'random_uniform', \
-                                 regularizer=l2(self.v_reg),trainable=True)
-
-    def call(self,inputs,**kwargs):
-        first_order = self.w0 + tf.matmul(inputs,self.w)
-        # second_order
-        second_order = 0.5 * tf.reduce_sum(
-            tf.pow(tf.matmul(inputs,tf.transpose(self.V)),2) -
-            tf.matmul(tf.pow(inputs,2) , tf.pow(tf.transpose(self.V), 2)),axis=1,keepdims=True) # 这里头的参数k被reduce_sum变成了1
-        outputs = first_order + second_order
-        return outputs
-
-class DeepFM_model(tf.keras.Model):
-
-    def __init__(self,feature_columns,k=10,hidden_units=[200,200,200],dnn_dropout=0.5,
+    def __init__(self,feature_columns,hidden_units=[256,128,64],
                  activation='relu',embed_reg = 1e-4):
-        super(DeepFM_model,self).__init__()
+        super(toutube_recall_model,self).__init__()
         self.dense_feature_columns,self.sparse_feature_columns = feature_columns
         # 为每一个sparse向量提供一个embedding层
         self.embed_layers = {
@@ -66,9 +39,7 @@ class DeepFM_model(tf.keras.Model):
                 embeddings_regularizer = l2(embed_reg)
             ) for i ,feat in enumerate(self.sparse_feature_columns)
         }
-        self.fm = FM(k)
         self.dnn = DNN(hidden_units,activation,dnn_dropout)
-        self.dense = Dense(1,activation = None)
 
     def call(self,inputs,**kwargs):
         dense_inputs,sparse_inputs = inputs
@@ -76,11 +47,7 @@ class DeepFM_model(tf.keras.Model):
         sparse_embed = tf.concat([self.embed_layers['embed_{}'.format(i)](sparse_inputs[:,i])
                                  for i in range(sparse_inputs.shape[1])],axis=-1)
         stack = tf.concat([dense_inputs,sparse_embed],axis=-1)
-        wide_outputs = self.fm(stack)# (input[0],1)
-        deep_outputs = self.dnn(stack) # (input[0],64)
-        deep_outputs = self.dense(deep_outputs) # (input[0],1)
-
-        outputs = tf.nn.sigmoid(tf.add(wide_outputs,deep_outputs))
+        outputs = self.dnn(stack) # (input[0],64)
         return outputs
 
     def summary(self,**kwargs):
@@ -88,19 +55,18 @@ class DeepFM_model(tf.keras.Model):
         sparse_inputs = tf.keras.Input(shape=(len(self.sparse_feature_columns),), dtype = tf.float32)
         tf.keras.Model(inputs=[dense_inputs, sparse_inputs],outputs = self.call([dense_inputs, sparse_inputs])).summary()
 
-class DeepFM:
+class Youtube:
     def __init__(self):
-        super(DeepFM,self).__init__()
-        self.file_root = './data/criteo_ctr/'
+        super(Youtube,self).__init__()
+        self.file_root = './data/ml-latest-small/'
         self._init_param()
-        # 训练集，测试集，dense column，sparse column
-        self.trainset,self.testset,self.feature_columns = self._init_frame()
-        self.dense_feature_columns,self.sparse_feature_columns = self.feature_columns
+        #item的个数以及dimension 训练集，验证集，测试集
+        self.item_fea_col, self.train, self.val, self.test = self._init_frame()
 
     def _init_param(self):
         # 定义网络参数，以及训练的时候用到的参数
         parser = argparse.ArgumentParser()
-        parser.add_argument('algrithom',type=str,default="DeepFM",help = 'the pratice method')
+        parser.add_argument('algrithom',type=str,default="youtube",help = 'the pratice method')
         parser.add_argument('--embed_dim',type=int,default=8,help = 'the len of feature embeding')
         parser.add_argument('--learning_rate',type=float,default=0.001,help = 'the learning rate of the model')
         parser.add_argument('--epochs',type=int,default=100,help = 'how many time we train the model')
@@ -114,32 +80,13 @@ class DeepFM:
     
     def _init_frame(self):
         # 处理数据集
-        names = ['label','I1','I2','I3','I4','I5','I6','I7','I8','I9','I10','I11','I12','I13',
-                'C1','C2','C3','C4','C5','C6','C7','C8','C9','C10','C11','C12','C13','C14',
-                 'C15','C16','C17','C18','C19','C20','C21','C22','C23','C24','C25','C26']
-        data_df = pd.read_csv(os.path.join(self.file_root,'tiny.csv'),sep=',',
-                               header=None,names=names)
-        sparse_features = ['C' + str(i) for i in range(1,27)]
-        dense_features = ['I' + str(i) for i in range(1,14)]
-        # 数据记录填补空记录
-#        data_df.dropna(axis=0, how='any', inplace=True)
-        data_df[sparse_features] = data_df[sparse_features].fillna('-1')
-        data_df[dense_features] = data_df[dense_features].fillna(0)
-
-        # 对离散数据进行labelEncoder处理
-        # LabelEncoder可以将标签分配一个0—n_classes-1之间的编码,将各种标签分配一个可数的连续编号
-        for feat in sparse_features:
-            le = LabelEncoder()
-            data_df[feat] = le.fit_transform(data_df[feat].tolist())
-            data_df[feat] = data_df[feat].astype(int)
-
-        # 对dense的数据进行归一化处理
-        dense_features = [feat for feat in data_df.columns if feat not in sparse_features + ['label']]
-        mms = MinMaxScaler(feature_range=(0,1))
-        data_df[dense_features] = mms.fit_transform(data_df[dense_features])
-        feature_columns = [[self._denseFeature(feat) for feat in dense_features]] + \
-                [[self._sparseFeature(feat,len(data_df[feat].unique()),embed_dim=global_args.embed_dim) \
-                 for feat in sparse_features]]
+        print('prepare dataset...')
+        # ratings: 
+        # userId,movieId,rating,timestamp
+        # 1,1,4.0,964982703
+        data_df = pd.read_csv(os.path.join(self.file_root,'ratings.csv'),sep=',',header=0)
+        import pdb
+        pdb.set_trace()
 
         train,test = train_test_split(data_df,test_size=global_args.test_size)
         train_X = [train[dense_features].values, train[sparse_features].values.astype('int32')]
@@ -148,15 +95,6 @@ class DeepFM:
         test_Y = test['label'].values.astype('int32')
 
         return (train_X, train_Y), (test_X, test_Y),feature_columns
-
-    def _denseFeature(self,feat):
-        return {'feat':feat}
-
-    def _sparseFeature(self,feat, feat_num, embed_dim = 4):
-        # feat：特征名字
-        # feat_num：这种特征有多少种值
-        # embed的尺寸是多少
-        return {'feat':feat,'feat_num':feat_num,'embed_dim':embed_dim}
 
     def calculate(self,*args):
         # prepare data
