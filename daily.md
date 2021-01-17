@@ -15,3 +15,4 @@
 - 2020.01.13：perper添加youtube召回模型理论
 - 2020.01.14：perper添加youtube排序模型理论以及模型的解释
 - 2020.01.15：perper添加解决YouTube模型中的一些不理解的点，以及部分代码
+- 2020.01.17：perper添加解决YouTube代码，解决bug

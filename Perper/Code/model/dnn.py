@@ -102,11 +102,15 @@ class DNN:
         # userId,movieId,rating,timestamp
         print('prepare dataset...')
         data_df = pd.read_csv(os.path.join(self.file_root,'ratings.csv'),sep=',',header=0)
+        """
+        下面产生数据的思路是原有样本均为正样本，随机生成样本为负样本
+        因此我们剔除评分比较低的样本，将剩余样本作为正样本进行训练
+        """
+        data_df = data_df[data_df.rating >= global_args.pos_score]
         # 对用户id和时间进行排序
         data_df = data_df.sort_values(by=['userId','timestamp'])
         train_data,test_data,val_data = [],[],[]
 
-#data_df.groupby('userId').get_group(609).sort_values(by=['timestamp'])
         item_id_max = data_df['movieId'].max()
 
         for user_id, df in tqdm(data_df[['userId','movieId']].groupby('userId')):

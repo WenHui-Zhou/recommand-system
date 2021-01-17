@@ -188,6 +188,8 @@ class DeepFM:
             self.model.compile(loss = binary_crossentropy,optimizer=Adam(learning_rate = global_args.learning_rate), \
                          metrics = [AUC()])
         # ======== model fit 
+        import pdb
+        pdb.set_trace()
         self.model.fit(
             train_X,
             train_Y,
