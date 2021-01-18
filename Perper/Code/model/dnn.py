@@ -23,6 +23,18 @@ from model.lib.dnn_evaluate import evaluate_model
 
 global_args = None
 
+class DNN(Layer):
+    def __init__(self,hidden_units,activation='relu'):
+        super(DNN,self).__init__()
+        self.dnn_network = [Dense(units=unit,activation=activation) for unit in hidden_units]
+
+    def call(self,inputs,**kwargs):
+        x = inputs
+        for dnn in self.dnn_network:
+            x = dnn(x)
+        return x
+
+
 class DNN_model(tf.keras.Model):
 
     def __init__(self,item_feat_col,maxlen=40,hidden_units=128,activation='relu',embed_reg=1e-6):
@@ -100,6 +112,7 @@ class DNN:
         train_data,test_data,val_data = [],[],[]
 
         item_id_max = data_df['movieId'].max()
+
         for user_id, df in tqdm(data_df[['userId','movieId']].groupby('userId')):
             pos_list = df['movieId'].tolist() # 这个用户看过的所有的电影
 

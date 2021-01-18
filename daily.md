@@ -12,3 +12,8 @@
 - 2020.01.10：perper添加wide and deep代码部分
 - 2020.01.11：perper添加deepFM理论部分
 - 2020.01.12：perper添加deepFM代码部分
+- 2020.01.13：perper添加youtube召回模型理论
+- 2020.01.14：perper添加youtube排序模型理论以及模型的解释
+- 2020.01.15：perper添加解决YouTube模型中的一些不理解的点，以及部分代码
+- 2020.01.17：perper添加解决YouTube代码，解决bug
+- 2020.01.18：perper解决了youtube召回模型，有点缺陷，打算用tf1.4实现排序模型，其实都差不多
