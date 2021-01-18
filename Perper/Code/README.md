@@ -17,9 +17,10 @@ manage选择算法-> workflow加载具体算法的工作流-> model调用模型�
 - DNN算法
 - WDL算法
 - deepfm算法
+- youtube算法
 
 
 
 ## 代码执行方法
 
-python train_main.py [item_cf/user_cf/gbdt/gbdt_lr/gcforest/word2vec/LR/FM/dnn/wdl/deepfm]
+python train_main.py [item_cf/user_cf/gbdt/gbdt_lr/gcforest/word2vec/LR/FM/dnn/wdl/deepfm/youtube]

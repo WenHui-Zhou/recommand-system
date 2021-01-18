@@ -33,7 +33,7 @@ class youtube_recall_model(tf.keras.Model):
         self.hist_len = hist_len # 用户历史记录使用的top k
         self.embed_his_layers = {
             'embed_his_' + str(i): Embedding(
-                input_dim = self.movieid_max,
+                input_dim = self.movieid_max+1,
                 input_length = 1,
                 output_dim = global_args.embed_dim,
                 embeddings_initializer = 'random_uniform',
@@ -42,7 +42,7 @@ class youtube_recall_model(tf.keras.Model):
         }
         #将每一个vector输入到各自的dense结构中
         self.embed_user_layer = Embedding(
-            input_dim = self.userid_max,
+            input_dim = self.userid_max+1,
             input_length = 1,
             output_dim = global_args.embed_dim,
             embeddings_initializer = 'random_uniform',
@@ -56,7 +56,7 @@ class youtube_recall_model(tf.keras.Model):
         userid,history = inputs
         history_movie = history[:,0]
         history_rate = history[:,1]
-        his_embed = tf.concat([self.embed_his_layers['embed_his_{}'.format(i)](history_movie[:,i])*history_rate[:,i]
+        his_embed = tf.concat([self.embed_his_layers['embed_his_{}'.format(i)](history_movie[:,i])#*history_rate[:,i]
                                  for i in range(self.hist_len)],axis=-1)
         user_embed = self.embed_user_layer(userid)
         user_embed = tf.reshape(user_embed,[-1,user_embed.shape[-1]])
@@ -164,9 +164,11 @@ class Youtube:
                     num_sampled = 128,
                     num_classes = self.movieid_max)
             return loss
-        loss_calculator = SampledSoftmaxLoss(self.model,self.movieid_max)   
-        self.model.compile(loss =sample_loss,optimizer=Adam(learning_rate = global_args.learning_rate),\
-                           experimental_run_tf_function=False)
+        self.model.compile(loss ='categorical_crossentropy',optimizer=Adam(learning_rate = global_args.learning_rate),\
+                         )
+#        self.model.compile(loss =sample_loss,optimizer=Adam(learning_rate = global_args.learning_rate),\
+#                           experimental_run_tf_function=False)
+#categorical_crossentropy
         # ======== model fit 
         train_X[0] = np.array(train_X[0])
         train_X[1] = np.array(train_X[1])
@@ -186,9 +188,9 @@ class Youtube:
             train_X,
             train_Y,
             epochs = global_args.epochs,
- #           callbacks = [EarlyStopping(monitor='val_loss',patience=1,restore_best_weights=True)],
+            callbacks = [EarlyStopping(monitor='val_loss',patience=1,restore_best_weights=True)],
             batch_size = global_args.batch_size,
- #           validation_split=0.1
+            validation_split=0.1
         )
         # ======== evaluate
  #       print('test AUC: %f' % self.model.evaluate(train_X,train_Y,batch_size = global_args.batch_size)[1])
