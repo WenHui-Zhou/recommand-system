@@ -41,8 +41,11 @@ def main():
     elif arg == 'youtube':
         from workflow.youtube_workflow import run as Youtube 
         Youtube(arg)
+    elif arg == 'youtube_rank':
+        from workflow.youtube_rank_workflow import run as Youtube_Rank 
+        Youtube_Rank(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm,youtube"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm,youtube.youtube_rank"]')
     sys.exit()
 
 if __name__ == '__main__':
