@@ -298,5 +298,14 @@ userId1：{timestamp1:movie1,timestamp2:movie2 ...}
 
 
 
+### YouTube ranking部分
+
+这一部分的网络结构与召回部分相似，最后加了个sigmoid结构。
+
+很草草的写完了这一部分，意识到tensorflow2.0需要定制一些东西，实在比较麻烦。考虑到大家都在用1.x。写一次版本可能会用tensorflow1.x来写。我最好去买本书来看。
+
+<img src = '../images/yrec_rank.png'>
 
 
+
+Ranking 部分最大的亮点是使用了weighted LR，将rating直接乘上输出值。
