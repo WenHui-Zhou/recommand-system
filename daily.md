@@ -17,3 +17,4 @@
 - 2020.01.15：perper添加解决YouTube模型中的一些不理解的点，以及部分代码
 - 2020.01.17：perper添加解决YouTube代码，解决bug
 - 2020.01.18：perper解决了youtube召回模型，有点缺陷，打算用tf1.4实现排序模型，其实都差不多
+- 2020.01.19：perper添加YouTube ranking部分代码
