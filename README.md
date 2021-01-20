@@ -18,3 +18,4 @@
 - [wide_and_deep模型](./Perper/blogs/wide_and_deep模型.md)
 - [DeepFM模型](./Perper/blogs/DeepFM模型.md)
 - [youtube推荐系统](./Perper/blogs/youtube推荐系统.md)
+- [基于电商平台的商品召回](./Perper/blogs/基于电商平台的商品召回.md)
