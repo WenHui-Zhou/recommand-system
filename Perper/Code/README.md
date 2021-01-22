@@ -20,9 +20,10 @@ manage选择算法-> workflow加载具体算法的工作流-> model调用模型�
 - deepfm算法[tf2.x]
 - youtube算法[tf2.x]
 - youtube_rank算法[tf2.x]
+- mut_recall算法[tf1.x]
 
 
 
 ## 代码执行方法
 
-python train_main.py [item_cf/user_cf/gbdt/gbdt_lr/gcforest/word2vec/LR/FM/dnn/wdl/deepfm/youtube/youtube_rank]
+python train_main.py [item_cf/user_cf/gbdt/gbdt_lr/gcforest/word2vec/LR/FM/dnn/wdl/deepfm/youtube/youtube_rank,mut_recall]
