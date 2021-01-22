@@ -10,7 +10,7 @@ from tqdm import tqdm
 import gc
 import pickle
 import random
-from datatime import datetime
+from datetime import datetime
 from operator import itemgetter
 import numpy as np
 import pandas as pd
@@ -18,6 +18,7 @@ from collections import defaultdict
 import collections
 from abc import ABC,abstractmethod
 
+global_args = None
 
 class BaseCf(ABC):
 
@@ -110,100 +111,28 @@ class BaseCf(ABC):
         """
         raise NotImplementedError
 
-class UserCf(BaseCf):
+#class ItemCf(BaseCf):
+class Mut_Recall(BaseCf):
     
     def __init__(self):
-        super(UserCf,self).__init__()
-
-    def _get_topN_similar_users(self,target_user_id,top_n):
-        """
-        计算与target用户最相似的top_n个用户
-        """
-        target_movies = self.frame[self.frame['userId'] == target_user_id]['movieId']
-        other_users_id = [i for i in set(self.frame['userId']) if i != target_user_id]
-        other_movies = [self.frame[self.frame['userId'] == i]['movieId'] for i in other_users_id]
-        similar_list = [self._tanimoto_similar(target_movies,movies) for movies in other_movies]
-        similar_list = sorted(zip(other_users_id,similar_list),key = lambda x:x[1],reverse = True)
-        return similar_list[:top_n]
-
-    def _get_candidate_movies(self,target_user_id):
-        """
-        find all the movies that user id did not meet before.
-        """
-        target_movies = set(self.frame[self.frame['userId'] == target_user_id]['movieId'])
-        other_user_movies = set(self.frame[self.frame['userId']!=target_user_id]['movieId'])
-        candidate_movies = list(target_movies^other_user_movies)
-        return candidate_movies
-
-    def _get_top_n_items(self,top_n_users,candidate_movies,top_n):
-        """
-        通过感兴趣程度来对电影排序
-        interest = sum(sim * normalize_rate)
-        """
-        top_n_user_data = [self.frame[self.frame['userId'] == k] for k,_ in top_n_users]
-        interest_list = []
-        for movie_id in candidate_movies:
-            tmp = []
-            for user_data in top_n_user_data:
-                if movie_id in user_data['movieId'].values:
-                    tmp.append(user_data[user_data['movieId'] == movie_id]['rating'].values[0]/5.0)
-                else:
-                    tmp.append(0)
-            interest = sum(top_n_users[i][1]*tmp[i] for i in range(len(top_n_users)))
-            interest_list.append((movie_id,interest))
-        interest_list = sorted(interest_list,key=lambda x:x[1],reverse=True)
-        return interest_list[:top_n]
-
-    def print_message(self,target_user_id,top_n,recommands_movies_id):
-        mess = "基于用户的协同过滤算法,传入用户id，为用户(id:{})得到的前{}推荐的商品如下：\n".format(target_user_id,top_n)
-        example_moviesId_of_target_user = list(zip(self.frame[self.frame['userId'] == target_user_id]['movieId'],\
-                                                    self.frame[self.frame['userId'] == target_user_id]['rating']))
-        print(mess)
-        history = None
-        for movie_id,score in example_moviesId_of_target_user[:top_n]:
-            user_watch_movies_data = self.movie_frame[self.movie_frame['movieId'] == movie_id]
-            user_watch_movies_data.loc[:, '对电影的评分'] = score
-            if history is None:
-                history = user_watch_movies_data
-            else:
-                history = history.append(user_watch_movies_data,ignore_index=True)
-
-        recommand_data = None
-        for movie_id,similar in recommands_movies_id:
-            recommand_movies_data = self.movie_frame[self.movie_frame['movieId'] == movie_id]
-            recommand_movies_data.loc[:, '相似度'] = similar
-            if recommand_data is None:
-                recommand_data = recommand_movies_data
-            else:
-                recommand_data = recommand_data.append(recommand_movies_data,ignore_index=True)
-
-        print('用户看电影的历史（部分）：\n')
-        print(history)
-
-        print('给该用户推荐的电影（部分）：\n')
-        print(recommand_data)
+    #    super(ItemCf,self).__init__()
+        super(Mut_Recall,self).__init__()
 
 
-    def calculate(self,*args):
-        """
-        实现抽象类，完成UserCF的服务
-        """
-        target_user_id = args[0]
-        top_n = args[1]
-        top_n_users = self._get_topN_similar_users(target_user_id,top_n)
-        candidate_movies = self._get_candidate_movies(target_user_id)
-        top_n_movies = self._get_top_n_items(top_n_users,candidate_movies,top_n)
-        self.print_message(target_user_id,top_n,top_n_movies)
-        return top_n_movies
-
-
-
-
-class ItemCf(BaseCf):
-    
-    def __init__(self):
-        super(ItemCf,self).__init__()
-        self.i2i_sim = self.itemcf_sim()
+    def _init_param(self):
+        # 定义网络参数，以及训练的时候用到的参数
+        parser = argparse.ArgumentParser()
+        parser.add_argument('algrithom',type=str,default="mut_recall",help = 'the pratice method')
+        parser.add_argument('--sim_item_topk',type=int,default=10,help = 'the len of feature embeding')
+        parser.add_argument('--learning_rate',type=float,default=0.001,help = 'the learning rate of the model')
+        parser.add_argument('--epochs',type=int,default=100,help = 'how many time we train the model')
+        parser.add_argument('--batch_size',type=int,default=256,help = 'a batch data size')
+        parser.add_argument('--test_size',type=float,default=0.2,help = 'the rate of test set / all data')
+        parser.add_argument('--w_reg',type=float,default=1e-4,help = 'w l2 normalization penalty')
+        parser.add_argument('--v_reg',type=float,default=1e-4,help = 'v l2 normalization penalty')
+        parser.add_argument('--recall_item_num',type=int,default=10,help = 'the latent vector size')
+        global global_args
+        global_args = parser.parse_args()
 
     def get_user_item_time(self):
 
@@ -247,67 +176,53 @@ class ItemCf(BaseCf):
 #        pickle.dump(i2i_sim_,open(self.save_news + 'itemcf_i2i_sim.pkl','wb'))
         return i2i_sim_
 
-    def _get_topN_similar_items(self,target_item_id,top_n):
-        """
-        计算与target item最相似的top_n个item
-        """
-        target_users = self.frame[self.frame['movieId'] == target_item_id]['userId']
-        other_items_id = [i for i in set(self.frame['movieId']) if i != target_item_id]
-        other_users = [self.frame[self.frame['movieId'] == i]['userId'] for i in other_items_id]
-        similar_list = [self._cosine_similar(target_users,user) for user in other_users]
-        similar_list = sorted(zip(other_items_id,similar_list),key = lambda x:x[1],reverse = True)
-        return similar_list[:top_n]
+    def item_based_recommand(self,user_id):
+        user_hist_items = self.user_item_time_dict[user_id]
+        user_hist_items_ = {user_id for user_id,_ in user_hist_items}
 
-    def _get_candidate_users(self,target_item_id):
+        item_rank = {}
+        for loc,(i,click_time) in enumerate(user_hist_items):
+            for j,wij in sorted(i2i_sim[i].items(),key=lambda x:x[1],reverse=True)[:global_args.sim_item_topk]:
+                if j in user_hist_items_:
+                    continue
+                item_rank.setdefault(j,0)
+                item_rank[j] += wij
+        if len(item_rank) < global_args.recall_item_num:
+            for i ,item in enumerate(self.item_top_click):
+                if item in item_rank.items():
+                    continue
+                item_rank[item] = -i - 100
+                if len(item_rank) == global_args.recall_item_num:
+                    break
+        item_rank = sorted(item_rank.items(),key=lambda x:x[1],reverse=True)[:global_args.recall_item_num]
+        return item_rank
+
+    def _get_users_item_recall(self):
         """
         find all the users that user id did not meet the target movie before.
         """
-        target_users = set(self.frame[self.frame['movieId'] == target_item_id]['userId'])
-        other_movie_users = set(self.frame[self.frame['movieId']!=target_item_id]['userId'])
-        candidate_users = list(target_users^other_movie_users)
-        return candidate_users
+        user_recall_items_dict = collections.defaultdict(dict)
+        for user in tqdm(self.frame['user_id'].unique()):
+            user_recall_items_dict[user] = self.item_based_recommand(user)
 
-    def _get_top_n_users(self,top_n_items,candidate_users,top_n):
-        """
-        通过感兴趣程度来对用户排序
-        interest = sum(sim * normalize_rate)
-        """
-        top_n_item_data = [self.frame[self.frame['movieId'] == k] for k,_ in top_n_items]
-        interest_list = []
-        for user_id in candidate_users:
-            tmp = []
-            for item_data in top_n_item_data:
-                if user_id in item_data['userId'].values:
-                    tmp.append(item_data[item_data['userId'] == user_id]['rating'].values[0]/5.0)
-                else:
-                    tmp.append(0)
-            interest = sum(top_n_items[i][1]*tmp[i] for i in range(len(top_n_items)))
-            interest_list.append((user_id,interest))
-        interest_list = sorted(interest_list,key=lambda x:x[1],reverse=True)
-        return interest_list[:top_n]
-
-    def print_message(self,target_item_id,top_n,recommands_users_id):
-        mess = "基于商品的协同过滤算法,传入商品id，为商品(id:{})得到的前{}推荐的用户如下：\n".format(target_item_id,top_n)
-        print(mess)
-
-        target_movie_data = self.movie_frame[self.movie_frame['movieId'] == target_item_id]
-
-        print('给该电影推荐的用户（部分）：\n')
-        print('| 用户 | 感兴趣度 |')
-        for user_id,interest in recommands_users_id:
-            print("| {} | {} |".format(user_id,str(interest)))
+        user_item_score_list = []
+        for user,items in tqdm(user_recall_items_dict.items()):
+            for item,score in items:
+                user_item_score_list.append([user,item,score])
+        recall_df = pd.DataFrame(user_item_score_list,columns=['user_id','click_article_id','pred_score'])
+        recall_df.to_csv('../data/mut_recall.csv',index=False,header = True)
+        return recall_df
+        
 
     def calculate(self,*args):
         """
         实现抽象类，完成itemCF的服务
         """
-        target_item_id = args[0]
-        top_n = args[1]
-        top_n_items = self._get_topN_similar_items(target_item_id,top_n)
-        candidate_users = self._get_candidate_users(target_item_id)
-        top_n_users = self._get_top_n_users(top_n_items,candidate_users,top_n)
-        self.print_message(target_item_id,top_n,top_n_users)
-        return top_n_users
+        self.i2i_sim = self.itemcf_sim()
+        self.user_item_time_dict = self.get_user_item_time()
+        self.item_top_click = self.get_item_topk_click()
+        recall_df = self._get_users_item_recall()
+        return recall_df
 
 
 
