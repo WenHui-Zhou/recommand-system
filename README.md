@@ -20,3 +20,8 @@
 - [youtube推荐系统](./Perper/blogs/youtube推荐系统.md)
 - [基于电商平台的商品召回赛题分析(一)](./Perper/blogs/基于电商平台的商品召回赛题分析(一).md)
 - [基于电商平台的商品召回数据分析(二)](./Perper/blogs/基于电商平台的商品召回数据分析(二).md)
+
+
+## tensorflow 1.x 学习
+
+- [tensorflow简介](./Perper/blogs/tensorflow简介.md)
