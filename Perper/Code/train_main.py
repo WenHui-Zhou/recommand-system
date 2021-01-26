@@ -44,8 +44,11 @@ def main():
     elif arg == 'youtube_rank':
         from workflow.youtube_rank_workflow import run as Youtube_Rank 
         Youtube_Rank(arg)
+    elif arg == 'mut_recall':
+        from workflow.mut_recall_workflow import run as Mut_Recall
+        Mut_Recall(arg)
     else:
-        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm,youtube.youtube_rank"]')
+        print('args must in ["item_cf,user_cf,LR,FM,gbdt,fbdt_lr,gcforest,dnn,wdl,deepfm,youtube.youtube_rank,mut_recall"]')
     sys.exit()
 
 if __name__ == '__main__':
