@@ -25,3 +25,4 @@
 ## tensorflow 1.x 学习
 
 - [tensorflow简介](./Perper/blogs/tensorflow简介.md)
+- [tensorflow入门](./Perper/blogs/tensorflow入门.md)
