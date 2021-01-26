@@ -62,6 +62,47 @@ bazel是谷歌开源的自动化构建工具，谷歌内部绝大多数的应用
 
 **bazel 是如何工作的**
 
+项目空间是Bazel的一个基本概念，一个项目空间可以简单地理解为一个文件夹，在这个文件夹中包含了编译一个软件需要的源代码以及输出编译结果的软链接。
+
+在一个项目空间内，bazel通过BUILD文件来找到需要编译的目标，BUILD中指定了编译目标的输入，输出以及编译方式，依赖关系。bazel支持的编译方式有三种`py_binary,py_library, py_py_test`。
+
+举一个例子，一个含有4个文件的项目：WORKSPACE，BUILD，hello_lib.py，hello_main.py。
+
+其中WORKSPACE这个文件给出了此项目的外部依赖关系，BUILD指出文件的编译方式以及编译的输入，依赖等，如下：
+
+```BUILD
+py_library(
+    name = "hello_lib",
+    srcs = [
+        "hello_lib.py",
+    ]
+)
+
+py_binary(
+    name = "hello_main",
+    srcs = [
+        "hello_main.py"
+    ],
+    deps = [
+        ":hello_lib",
+    ]
+)
+```
+
+其中srcs表示编译文件的输入，deps表示文件的依赖关系。
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
