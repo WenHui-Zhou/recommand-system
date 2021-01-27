@@ -121,11 +121,122 @@ print(result.eval())
 
 ## Tensorflow 计算过程--实现神经网络为例
 
+在确定一个神经网络的训练过程中，执行的步骤如下：
 
+1. 确定输入的输入，将原始问题抽象成数据表达（特征提取）
+2. 定义网络的结构
+3. 通过训练数据来优化网络参数
+4. 使用优化后的网络来预测数据
 
+### 前向传播过程
 
+搭建网络的时候，通过确定每一层有多少神经元，神经网络共有多少层来确定。一个最简单的方式，就是通过定义参数的形式来确定网络的结构:
 
+<img src = "../images/tf_3_1.png">
 
+如上图，输入层到隐层之间的参数为一个[2,3]的矩阵，隐层到输出层之间的参数为[3,1]的矩阵，简单定义如下：
+
+```python
+w1 = tf.Variable(tf.random_normal((2,3),stddev=1,seed=1))
+w2 = tf.Variable(tf.random_normal((3,1),stddev=1,seed=1))
+```
+
+因此正向传播的过程如下：
+
+```python
+h = tf.matmul(x,w1)
+y = tf.matmul(h,w2)
+```
+
+即用tensorflow中矩阵相乘的方式计算参数与输入之间的乘积，最后得到输出。
+
+### 神经网络的参数与tensorflow变量
+
+神经网络训练的目的就是不断优化其中的网络参数，网络参数通常有`tf.Variable`来定义得到，如上w1,w2。
+
+**定义及初始化**
+
+和其他语言类似，我们在定义变量的时候，也需要对他赋予初始值，使用随机值赋值时最常见的：
+
+```python
+weights = tf.Variable(tf.random_normal([2,3],stddev=2))
+```
+
+上面例子中使用`tf.random_normal`来初始化，会产生一个[2,3]的矩阵，满足正态分布，并且标准差为2,此外tensorflow还支持多种随机数生成的方式。
+
+tensorflow还支持用常数来初始化变量：
+
+```python
+tf.zeros([2,3],tf.int32)
+tf.ones([2,3],tf.int32)
+tf.fill([2,3],9)
+tf.constant([1,2,3])
+```
+
+偏置项通常使用常数来初始化。
+
+也可用其他变量的值来初始化变量：
+
+```python
+w3 = tf.Variable(weights.initialized_value())
+```
+
+在执行程序之前，我们需要对变量进行初始化，在tensorflow中这一过程需要被显式的调用：
+
+```python
+init_op = tf.global_variables_initializer()
+sess.run(init_op)
+```
+
+通过上述代码可以完成所有变量的初始化。
+
+### 变量的组织与管理
+
+变量是一个申明函数`tf.Variable`的一个运算，这个运算的结果就是张量。对于每一个Variable 来说，它都提供了两个方法：
+
+- 一个方法是read：将实际值提供给这个变量参与的运算，例如`tf.matmul`。
+- 第二个方法是assign：完成变量的初始化。
+
+tensorflow通过集合来管理变量。所有的变量都会被自动的加入到`GraphKeys.VARIABLES` 这个集合中，通过`tf.global_variables()` 函数可以拿到当前计算图上的所有变量。
+
+对于需要优化的变量，定义的时候默认参数 `trainable = true`，那么这个变量将会被加入到`GraphKeys.TRAINABLE_VARIABLES`集合中，这个集合也是tensorflow默认的优化对象集合，通过`tf.trainable_variable()`可以查看所有可训练的参数。
+
+**variable与张量类似，有着name,shape,dtype三种类型的属性，可以通过定义这些属性得到适合的变量。在传参的时候，指定初始化值的shape是必须的，type则是自动匹配的，name不传入参数的话也是自动匹配的。**
+
+### placeholder的作用
+
+训练神经网络的过程是将数据分成一个个batch，然后循环，重复训练很多遍得到的。如果将每一次的数据都以一个变量的方式加到计算图中，那么这个计算图将不断的膨胀，变得非常大。因此一个解决方法是利用`placeholder`，为变量在计算图中留出位置，然后每次训练的时候重复使用这个空位置，并使用`feed_dict={x:value}`来指定传入的placeholder位置以及数据。
+
+```python
+x = tf.placeholder(tf.float32,shape=(None,2),name = "input")
+```
+
+可以看出来，`placeholder`也是有这三个主要的参数组成，其中shape的数据维度可以根据输入数据进行推测，可以不用写，但是如果确定传入的维度，写出来比较不容易出错。
+
+`shape = (None,2)` 可以看出来，第一维参数是需要推测的，通常是batch的维度，用None表示的优点是，我们可以随意的设置batch而不使维度不匹配。
+
+#### tensorflow计算过程的代码实现
+
+一个简单的神经网络通常包含：
+
+1. 数据的输入（特征工程）
+2. 网络的搭建（网络层，参数的定义）
+3. 前向传播过程
+4. 执行过程（启用session）
+5. 损失的定义（输出与GT之间的距离）
+6. 优化器的定义（减小损失）
+7. 训练过程（将batch用feed_dict喂给网络）
+8. 每个一段时间的输出（中间结果）
+9. 模型的保存
+10. 模型的预测
+
+下面完成1-8点，最后两点留着补充。
+
+#### 结果
+
+<img src = "../images/tf_3_2.png">
+
+代码：[代码地址](../Code/tensorflow/simple_DNN_3_2.ipynb)
 
 
 
