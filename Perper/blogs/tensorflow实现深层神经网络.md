@@ -89,3 +89,88 @@ loss = tf.reduce_sum(tf.where(tf.greater(v1,v2),(v1-v2)*a,(v2-v1)*b))
 下面定义一个简单的网络模型，说明损失的作用：[代码地址](../Code/tensorflow/4_1.py)
 
 可以看出，经过5000轮迭代之后，参数输出为[[1.0193471，1.0428091]]，即大于1，网络倾向于预测更大的商品数量。
+
+
+
+## 神经网络优化算法
+
+在神经网络的训练过程中，参数的优化直接决定了模型的质量。对于大多数的优化问题，优化过程难以一步到位，神经网络优化过程则是采用了梯度下降的方法，通过逐渐的减小损失将参数朝着损失更小的方向移动。
+
+神经网络的训练过程大致遵循以下的代码：
+
+```python
+batch_size = n
+x = tf.placeholder(tf.float32，shape=(None,2),name = "x-input")
+y_ = tf.placeholder(tf.float32,shape=(None,1),name = "y-input")
+# 定义神经网络
+loss = ...
+train_step = tf.train.AdamOptimizer(0.001).minimize(loss)
+# 训练神经网络
+with tf.Session() as sess:
+  # s参数化实例 ...
+  # 迭代更新
+  for i in range(STEPS):
+    # 准备好数据集
+    current_x,current_y = ...
+    sess.run(train_step,feed_dict={x:current_x,y:current_y})
+```
+
+## 神经网络的进一步优化
+
+### 学习率的设置
+
+通过控制学习率来控制参数的更新速度，在设置学习率的时候，通常和模型训练的程度有关，一开始训练的时候，希望学习率大一些，随后网络稳定了希望学习率小一些。
+
+```python
+global_step = tf.Variable(0)
+
+learning_rate = tf.train.exponential_decay(
+    0.1*global_step,100,0.96,staircase = True
+)
+learning_step = tf.train.GradientOptimizer(learning_rate).minimize(loss)
+```
+
+### 过拟合的问题
+
+当网络去过分拟合参数的时候，就会出现泛化性差的过拟合问题。这时候最好的做法是在模型中引入L1和L2正则化项。L1正则化项使得参数尽量的稀疏，L2正则化项则是使得参数尽可能的小。
+
+具体实现的时候，我们使用`tf.contrib.layers.l1_regularizer(.5)(weight)`就可以对参数进行正则化。当时当我们面对一个巨大的网络的时候，我们如何将所有的参数都传入正则化函数中呢。tensorflow的做法是使用集合来完成。下面通过例子来学习集合保存参数的过程：
+
+```python
+import tensorflow as tf
+
+def get_weight(shape,lambda):
+  var = tf.Variable(tf.random_normal(shape),dtype=tf.float32)
+  tf.add_to_collection('losses',tf.contrib.layers.l2_regularizer(lambda)(var))
+  return var
+```
+
+随后在模型训练的过程中，将这些损失函数融合到损失中：
+
+```python
+loss = tf.add_n(tf.get_collection('losses'))
+```
+
+### 滑动平均模型
+
+滑动平均值就是数据每一次的训练都受前一次训练的影响，并且随着训练过程的加深，影响将越来越大。
+
+滑动平均模型对每一个变量在更新的时候，引入一个影子变量，影子变量随着参数更新进行衰减：
+$$
+shadow = decay*shadow + (1-decay)*variable
+$$
+其中variable是更新后的新变量，decay的值通常取得很大，保证新变量对shadow的影响尽量的小。保证模型的稳定。为了使得模型更加地贴合实际场景，使用decay参数对衰减率进行修正：
+$$
+decay = min{\{\frac{1+num\_update}{10+num\_update}\}}
+$$
+tensorflow 中实现滑动平均模型的方法是：
+
+```python
+ema = tf.train.ExponentialMovingAverage(0.99,step)
+maintain_average = ema.apply([v1])
+```
+
+
+
+
+
