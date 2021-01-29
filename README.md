@@ -1,7 +1,4 @@
-# Cying
-
-
-# Perer
+# Perper
 
 ## Recommander System
 
@@ -25,4 +22,5 @@
 ## tensorflow 1.x 学习
 
 - [tensorflow简介](./Perper/blogs/tensorflow简介.md)
-- [tensorflow入门](./Perper/blogs/tensorflow入门.md)
+- [tensorflow入门](./Perper/blogs/Tensorflow入门.md)
+- [tensorflow实现深层神经网络](./Perper/blogs/tensorflow实现深层神经网络.md)
