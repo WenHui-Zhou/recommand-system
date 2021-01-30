@@ -5,7 +5,7 @@
 # Create Time : 2021-01-30
 # Copyright (C)2021 All rights reserved.
 import tensorflow as tf
-from tensorflow.examples.mnist import input_data
+from tensorflow.examples.tutorials.mnist import input_data
 
 INPUT_NODE = 784
 OUTPUT_NODE = 10
@@ -58,5 +58,28 @@ def train(mnist):
         LEARNING_RATE_DECAY
     )
     train_step = tf.train.GradientDescentOptimizer(learning_rate).minimize(loss,global_step=global_step)
+    train_op = tf.group(train_step,variable_averages_op)
+    correct_prediction = tf.equal(tf.argmax(average_y,1),tf.argmax(y_,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
+
+    with tf.Session() as sess:
+        tf.global_variables_initializer().run()
+        validate_feed = {x:mnist.validation.images,
+                         y:mnist.validation.labels}
+        test_feed = {x:mnist.test.images,y_:mnist.test.labels}
+
+        for i in range(TRAINING_STEPS):
+            if i % 1000 == 0:
+                validate_acc = sess.run(accuracy,feed_dict=validate_feed)
+                print('after %d training step(s).,validation accuracy is %g' %(i, validate_acc))
+            xs,ys = mnist.traom.next_batch(BATCH_SIZE)
+            sess.run(train_op,feed_dict = {x:xs,y_:ys})
+        test_acc = sess.run(accuracy,feed_dict =test_feed)
+        print('after %d training step(s).,test accuracy is %g' %(TRAINING_STEPS, test_acc))
+def main(argv=None):
+    mnist = input_data.read_data_sets('../data/mnist/',one_hot = True)
+if __name__ == '__main__':
+    tf.app.run()
+        
 
 
