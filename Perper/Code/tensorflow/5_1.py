@@ -26,18 +26,33 @@ def inference(input_tensor,avg_class,weights1,biases1,weights2,biases2):
     else:
         layer1 = tf.nn.relu(tf.matmul(input_tensor,avg_class.average(weights1)) + avg_class.average(biases1))
         return tf.matmul(layer1,avg_class.average(weights2)) + avg_class.average(biases2)
+def inference_v2(input_tensor,avg_class):
+    with tf.variable_scope('layer1',reuse = tf.AUTO_REUSE):
+        weights = tf.get_variable("weights",shape = [INPUT_NODE,LAYER_NODE],
+                                 initializer = tf.truncated_normal_initializer(stddev=0.1))
+        biases = tf.get_variable("biases",[LAYER_NODE],
+                                initializer = tf.constant_initializer(0.0))
+        layer1 = tf.nn.relu(tf.matmul(input_tensor,weights) + biases)
+    with tf.variable_scope('layer2',reuse=tf.AUTO_REUSE):
+        weights = tf.get_variable('weights',shape=[LAYER_NODE,OUTPUT_NODE],
+                                 initializer = tf.truncated_normal_initializer(stddev=0.1))
+        biases = tf.get_variable("biases",shape = [OUTPUT_NODE],
+                               initializer = tf.constant_initializer(0.0))
+        layer2 = tf.matmul(layer1,weights) + biases
+    return layer2
 
 def train(mnist):
 	# 定义网络各种参数
     x  = tf.placeholder(tf.float32,[None,INPUT_NODE],name='x-input')
     y_ = tf.placeholder(tf.float32,[None,OUTPUT_NODE],name='y-input')
     # 生成隐藏层
-    weights1 = tf.Variable(tf.truncated_normal([INPUT_NODE,LAYER_NODE],stddev = 0.1))
-    biases1 = tf.Variable(tf.constant(0.1,shape=[LAYER_NODE]))
-    weights2 = tf.Variable(tf.truncated_normal([LAYER_NODE,OUTPUT_NODE],stddev = 0.1))
-    biases2 = tf.Variable(tf.constant(0.1,shape = [OUTPUT_NODE]))
+#    weights1 = tf.Variable(tf.truncated_normal([INPUT_NODE,LAYER_NODE],stddev = 0.1))
+#    biases1 = tf.Variable(tf.constant(0.1,shape=[LAYER_NODE]))
+#    weights2 = tf.Variable(tf.truncated_normal([LAYER_NODE,OUTPUT_NODE],stddev = 0.1))
+#    biases2 = tf.Variable(tf.constant(0.1,shape = [OUTPUT_NODE]))
 
-    y = inference(x,None,weights1,biases1,weights2,biases2)
+#    y = inference(x,None,weights1,biases1,weights2,biases2)
+    y = inference_v2(x,None)
     global_step = tf.Variable(0,trainable=False)
 
     variable_averages = tf.train.ExponentialMovingAverage(
@@ -45,14 +60,17 @@ def train(mnist):
     )
     variable_averages_op = variable_averages.apply(tf.trainable_variables())
 
-    average_y = inference(x,variable_averages,weights1,biases1,weights2,biases2)
+    average_y = inference_v2(x,variable_averages)
     # 定义损失函数
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
         logits = y,labels = tf.argmax(y_,1)
     )
     cross_entropy_mean = tf.reduce_mean(cross_entropy)
     regularizer = tf.contrib.layers.l1_regularizer(REGULARIZATION_RATE)
-    regularization = regularizer(weights1) + regularizer(weights2)
+    with tf.variable_scope('layer1',reuse=True):
+        regularization = regularizer(tf.get_variable("weights",shape = [INPUT_NODE,LAYER_NODE]))
+    with tf.variable_scope('layer2',reuse = True):
+        regularization += regularizer(tf.get_variable("weights",shape = [LAYER_NODE,OUTPUT_NODE]))
     loss = cross_entropy_mean + regularization
     learning_rate = tf.train.exponential_decay(
         LEARNING_RATE_BASE,
