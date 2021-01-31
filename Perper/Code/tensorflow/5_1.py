@@ -7,6 +7,7 @@
 import tensorflow as tf
 from tensorflow.examples.tutorials.mnist import input_data
 
+
 INPUT_NODE = 784
 OUTPUT_NODE = 10
 
@@ -27,13 +28,14 @@ def inference(input_tensor,avg_class,weights1,biases1,weights2,biases2):
         return tf.matmul(layer1,avg_class.average(weights2)) + avg_class.average(biases2)
 
 def train(mnist):
+	# 定义网络各种参数
     x  = tf.placeholder(tf.float32,[None,INPUT_NODE],name='x-input')
     y_ = tf.placeholder(tf.float32,[None,OUTPUT_NODE],name='y-input')
     # 生成隐藏层
     weights1 = tf.Variable(tf.truncated_normal([INPUT_NODE,LAYER_NODE],stddev = 0.1))
     biases1 = tf.Variable(tf.constant(0.1,shape=[LAYER_NODE]))
     weights2 = tf.Variable(tf.truncated_normal([LAYER_NODE,OUTPUT_NODE],stddev = 0.1))
-    biases2 = tf.Variable(tf.constant(0.1,shape[OUTPUT_NODE]))
+    biases2 = tf.Variable(tf.constant(0.1,shape = [OUTPUT_NODE]))
 
     y = inference(x,None,weights1,biases1,weights2,biases2)
     global_step = tf.Variable(0,trainable=False)
@@ -44,6 +46,7 @@ def train(mnist):
     variable_averages_op = variable_averages.apply(tf.trainable_variables())
 
     average_y = inference(x,variable_averages,weights1,biases1,weights2,biases2)
+    # 定义损失函数
     cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(
         logits = y,labels = tf.argmax(y_,1)
     )
@@ -62,24 +65,30 @@ def train(mnist):
     correct_prediction = tf.equal(tf.argmax(average_y,1),tf.argmax(y_,1))
     accuracy = tf.reduce_mean(tf.cast(correct_prediction,tf.float32))
 
+    # 定义训练过程，以及测试的代码
     with tf.Session() as sess:
         tf.global_variables_initializer().run()
         validate_feed = {x:mnist.validation.images,
-                         y:mnist.validation.labels}
+                         y_:mnist.validation.labels}
         test_feed = {x:mnist.test.images,y_:mnist.test.labels}
 
         for i in range(TRAINING_STEPS):
             if i % 1000 == 0:
                 validate_acc = sess.run(accuracy,feed_dict=validate_feed)
                 print('after %d training step(s).,validation accuracy is %g' %(i, validate_acc))
-            xs,ys = mnist.traom.next_batch(BATCH_SIZE)
+            xs,ys = mnist.train.next_batch(BATCH_SIZE)
             sess.run(train_op,feed_dict = {x:xs,y_:ys})
         test_acc = sess.run(accuracy,feed_dict =test_feed)
         print('after %d training step(s).,test accuracy is %g' %(TRAINING_STEPS, test_acc))
 def main(argv=None):
+#    import pdb
+#    pdb.set_trace()
     mnist = input_data.read_data_sets('../data/mnist/',one_hot = True)
+    train(mnist)
+
 if __name__ == '__main__':
-    tf.app.run()
+#    tf.app.run()
+    main()
         
 
 

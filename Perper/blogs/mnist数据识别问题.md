@@ -32,6 +32,30 @@ xs,ys = mnist.train.next_batch(batch_size)
 
 代码位置：[地址](../Code/5_1.py)
 
+**代码解释：**
+
+<img src = '../images/mnist_2.png'>
+
+展示了模型的网络结构，即一层全连接层，激活函数为relu，随后又接一层全连接层。
+
+<img src = "../images/mnist_3.png">
+
+<img src = "../images/mnist_4.png">
+
+上述过程定义了网络训练的参数，以及网络的损失函数，网络选择的优化器。预测结果，模型的训练过程。
+
+**代码结果：**
+
+<img src = '../images/mnist_1.png'>
+
+
+
+## 变量管理
+
+
+
+
+
 
 
 
