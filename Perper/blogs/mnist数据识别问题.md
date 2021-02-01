@@ -102,9 +102,52 @@ with tf.variable_scope('foo',reuse=True):
 
 
 
+### TensorFlow 模型持久化
 
+tensorflow提供了一个非常简单的API来保存和还原一个神经网络模型，这个API是`tf.train.Saver`。 以下代码保存tensorflow计算图的方法：
 
+```python
+import tensorflow as tf
+v1 = tf.Variable(tf.constant(1.0,shape=[1]),name = 'v1')
+v2 = tf.Variable(tf.constant(2.0,shape=[1]),name = 'v2')
+result = v1 + v2
+init_op = tf.global_variables_initializer()
+save = tf.train.Saver()
 
+with tf.Session() as sess:
+  sess.run(init_op)
+  saver.save(sess,"model.ckpt")
+```
+
+模型保存后将会生成三个文件：
+
+- model.ckpt.meta：里头保存着tensorflow计算图的结构
+- model.ckpt：里头保存着tensorflow中每个变量的取值
+- ckeckpoint：里头保存着一个目录下所有的模型文件列表
+
+以下代码给出加载已保存的模型的方法：
+
+```python
+import tensorflow as tf
+
+v1 = tf.Variable(tf.constant(1.0,shape = [1]),name = 'v1')
+v2 = tf.Variable(tf.constant(2.0,shape = [1]),name = 'v2')
+saver = tf.train.Saver()
+with tf.Session() as sess:
+  saver.restore(sess,"model.ckpt")
+  print(sess.run(result))
+```
+
+如果不希望重复计算图上的运算，可以直接加载计算图的结构：
+
+```python
+saver = tf.train.import_meta_graph("path/model.ckpt.meta")
+with tf.Session() as tf:
+  saver.restore(sess,'model.ckpt')
+  print(sess.run(tf.get_default_graph().get_tensor_by_name('add:0')))
+```
+
+书中还有多种模型参数的保存方法，包括仅保存部分的参数，仅载入部分的网络结构等。
 
 
 
