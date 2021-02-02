@@ -149,7 +149,86 @@ with tf.Session() as tf:
 
 书中还有多种模型参数的保存方法，包括仅保存部分的参数，仅载入部分的网络结构等。
 
+### 持久化原理及数据格式
 
+tensorflow通过元图（metaGraphDef）来记录计算图中节点的信息以及运行计算图中节点所需要的元数据。元图是由metagraphdef protocol buffer 定义的。主要记录了6类信息。下面逐一介绍每一个属性中存储的信息。保存metagraphdef信息的文件默认为.meta为后缀名。
+
+下面介绍metaGraphDef记录的6个主要信息的属性值：
+
+**meta_info_def**
+
+```protobuf
+message MetaInfoDef{
+  string meta_graph_version = 1;
+  OpList stripped_op_list = 2;
+  ...
+}
+```
+
+Meta_info_def 中记录了最重要的是opList，其中记录了tensorflow计算图中使用到的所有运算方法的信息。
+
+**graph_def**
+
+```protobuf
+message GraphDef{
+  repeated NodeDef node = 1;
+  VersionDef versions = 4;
+  ...
+}
+
+message NodeDef{
+  string name = 1;
+  string op = 2;
+  ...
+}
+```
+
+该属性记录了tensorflow中计算图的节点信息，只关注计算图的连接结构。
+
+**save_def**
+
+```protobuf
+message SaverDef{
+  string filename_tensor_name = 1;
+  string save_tensor_name = 2;
+  ...
+}
+```
+
+该属性记录了持久化模型时需要用到的一些参数，比如文件名，保存操作和加载操作的频率等等。
+
+**collection_def **
+
+```protobuf
+message CollectionDef{
+  message NodeList{
+    repeated string value = -1;
+  }
+  message ByteList {
+    repeated bytes value = 1;
+  }
+  ...
+}
+```
+
+在tensorflow的计算图中，维护不同的集合，维护这些集合是通过collection_def 来完成的。它完成了从集合名称到集合内容的映射。
+
+**tensorflow对变量取值的保存**
+
+是存储在`model.ckpt.index` 和 `model.ckpt.data-****-of-****`中的。其中model.ckpt.data文件是通过SSTable保存的，可以理解为一个(key,value)的集合。
+
+**checkpoint文件**
+
+tensorflow通过`tf.train.Saver`来自动生成且自动维护所有tensorflow的模型文件。当某个保存的tensorflow模型文件被删除的时候，checkpoint会自动更新。
+
+```protobuf
+message CheckpointState{
+  string model_checkpoint_path = 1;
+  repeated string all_model_checkpoint_paths = 2;
+}
+```
+
+Model_checkout_path 属性中保存了最新的tensorflow模型文件，all_model_checkpoint_paths保存了还没被完全删除的所有checkpoint文件。
 
 
 
