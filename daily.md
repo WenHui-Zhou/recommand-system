@@ -28,3 +28,6 @@
 - 2020.01.28：perper添加tensorflow实现深层神经网络的部分
 - 2020.01.29：perper完善tensorflow实现深层神经网络
 - 2020.01.31：perper完善tensorflow实现深层神经网络的代码部分
+- 2020.02.01：perper完善mnist部分的数据持久化
+- 2020.02.01：perper完善mnist部分的数据持久化理论部分
+- 2020.02.03：perper完善mnist部分的一个完整代码
