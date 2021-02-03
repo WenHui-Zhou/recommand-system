@@ -230,7 +230,23 @@ message CheckpointState{
 
 Model_checkout_path 属性中保存了最新的tensorflow模型文件，all_model_checkpoint_paths保存了还没被完全删除的所有checkpoint文件。
 
+## tensorflow 最佳实践
 
+一个完整的tensorflow代码含有多个部分，我们可以将各个部分拆分开，定义模型的inference过程，train过程，以及eval test的过程。
 
+下面将分别实现这三个代码：
 
+[mnist_inference.py](../Code/tensorflow/mnist_test/mnist_inference.py)
+
+[mnist_train.py](../Code/tensorflow/mnist_test/mnist_train.py)
+
+[mnist_eval.py](../Code/tensorflow/mnist_test/mnist_eval.py)
+
+train部分的结果：
+
+<img src = "../images/mnist_6.png">
+
+eval 部分的结果：
+
+<img src = "../images/mnist_7.png">
 
