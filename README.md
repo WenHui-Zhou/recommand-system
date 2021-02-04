@@ -25,3 +25,4 @@
 - [tensorflow入门](./Perper/blogs/Tensorflow入门.md)
 - [tensorflow实现深层神经网络](./Perper/blogs/tensorflow实现深层神经网络.md)
 - [mnist数据识别问题](./Perper/blogs/mnist数据识别问题.md)
+- [图像识别与卷积神经网络](./Perper/blogs/图像识别与卷积神经网络.md)
