@@ -6,7 +6,8 @@
 # Copyright (C)2021 All rights reserved.
 import tensorflow as tf 
 from tensorflow.examples.tutorials.mnist import input_data
-import mnist_inference
+import mnist_inference_letnet5
+import numpy as np
 import os 
 
 batch_size = 100
@@ -17,12 +18,15 @@ training_step = 3000
 moving_average_decay = 0.99
 model_save_path = "./"
 model_name = "model.ckpt"
-
+image_size = mnist_inference_letnet5.image_size
 def train(mnist):
-    x = tf.placeholder(tf.float32,[None,mnist_inference.input_node],name = "x_input")
-    y_ = tf.placeholder(tf.float32,[None,mnist_inference.output_onde],name = "y_input")
+#    x = tf.placeholder(tf.float32,[None,mnist_inference.input_node],name = "x_input")
+    x = tf.placeholder(tf.float32,[batch_size,mnist_inference_letnet5.image_size,\
+                                  mnist_inference_letnet5.image_size,\
+                                  mnist_inference_letnet5.num_channels],name = "x-input")
+    y_ = tf.placeholder(tf.float32,[None,mnist_inference_letnet5.output_onde],name = "y_input")
     regularizer = tf.contrib.layers.l2_regularizer(regularization_rate)
-    y = mnist_inference.inference(x,regularizer)
+    y = mnist_inference_letnet5.inference(x,True,regularizer)
     global_step = tf.Variable(0,trainable=False)
 
     variable_averages = tf.train.ExponentialMovingAverage(
@@ -47,6 +51,7 @@ def train(mnist):
         tf.global_variables_initializer().run()
         for i in range(training_step):
             xs,ys = mnist.train.next_batch(batch_size)
+            xs = np.reshape(xs,(batch_size,image_size,image_size,mnist_inference_letnet5.num_channels))
             _, loss_value,step = sess.run([train_op,loss,global_step],feed_dict={x:xs,y_:ys})
 
             if i % 1000 == 0:

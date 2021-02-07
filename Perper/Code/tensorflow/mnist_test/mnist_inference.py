@@ -11,6 +11,13 @@ input_node = 784
 output_onde = 10
 middle_node = 500
 # 设置一些层的参数
+image_size = 28
+num_channels = 1
+conv1_deep = 32
+conv1_size = 5
+conv2_deep = 64
+conv2_size = 5
+fc_size = 512
 
 def get_weight_variable(shape,regularizer):
     weights = tf.get_variable("weights",shape,initializer = tf.truncated_normal_initializer(stddev=0.1))
@@ -18,7 +25,7 @@ def get_weight_variable(shape,regularizer):
         tf.add_to_collection('losses',regularizer(weights))
     return weights
 
-def inference(input_tensor,regularizer):
+def inference(input_tensor,train,regularizer):
 
     with tf.variable_scope('layer1'):
         weights = get_weight_variable([5,5,3,16],regularizer)
