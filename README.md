@@ -28,3 +28,4 @@
 - [图像识别与卷积神经网络](./Perper/blogs/图像识别与卷积神经网络.md)
 - [图像数据处理](./Perper/blogs/图像数据处理.md)
 - [循环神经网络](./Perper/blogs/循环神经网络.md)
+- [自然语言处理](./Perper/blogs/自然语言处理.md)
