@@ -29,3 +29,4 @@
 - [图像数据处理](./Perper/blogs/图像数据处理.md)
 - [循环神经网络](./Perper/blogs/循环神经网络.md)
 - [自然语言处理](./Perper/blogs/自然语言处理.md)
+- [tensorflow高层封装](./Perper/blogs/tensorflow高层封装.md)
