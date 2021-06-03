@@ -30,3 +30,6 @@
 - [循环神经网络](./Perper/blogs/循环神经网络.md)
 - [自然语言处理](./Perper/blogs/自然语言处理.md)
 - [tensorflow高层封装](./Perper/blogs/TensorFlow高层封装.md)
+
+## 《深度学习推荐系统》学习
+- [协同过滤](./Perper/blogs/Deep-Learning-Recommand/协同过滤.md)
