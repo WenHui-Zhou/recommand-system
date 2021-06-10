@@ -32,4 +32,4 @@
 - [tensorflow高层封装](./Perper/blogs/TensorFlow高层封装.md)
 
 ## 《深度学习推荐系统》学习
-- [协同过滤](./Perper/blogs/Deep-Learning-Recommand/协同过滤.md)
+- [第一章第二章](./Perper/blogs/Deep-Learning-Recommand/第一章第二章.md)
